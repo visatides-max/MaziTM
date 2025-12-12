@@ -5,164 +5,139 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>MaziTM</title>
     <style>
-        /* --- PREMIUM CSS (No Tailwind needed) --- */
+        /* --- PREMIUM STYLES (No Downloads Needed) --- */
         :root {
             --primary: #f97316; /* Orange */
-            --primary-dark: #ea580c;
             --accent: #0ea5e9; /* Sky Blue */
             --bg: #f8fafc;
             --surface: #ffffff;
             --text: #1e293b;
             --text-light: #94a3b8;
             --border: #e2e8f0;
-            --danger: #ef4444;
-            --success: #10b981;
         }
         
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
         
         body {
             margin: 0; padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             background-color: var(--bg); color: var(--text);
             height: 100vh; display: flex; flex-direction: column;
             user-select: none;
         }
 
-        /* ICONS */
-        svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+        /* ICONS (SVG) */
+        .icon { width: 24px; height: 24px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 
         /* HEADER */
         header {
-            height: 65px; background: var(--surface);
+            height: 60px; background: var(--surface);
             border-bottom: 1px solid var(--border);
             display: flex; align-items: center; justify-content: space-between;
             padding: 0 20px; position: fixed; top: 0; width: 100%; z-index: 100;
         }
         .logo-box {
-            width: 36px; height: 36px;
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            border-radius: 10px; color: white;
+            width: 32px; height: 32px;
+            background: linear-gradient(135deg, var(--primary), #ea580c);
+            border-radius: 8px; color: white;
             display: flex; align-items: center; justify-content: center;
-            font-weight: 900; font-size: 20px;
-            box-shadow: 0 4px 10px rgba(249, 115, 22, 0.3);
+            font-weight: 900; font-size: 18px;
         }
         .brand { font-size: 20px; font-weight: 800; margin-left: 10px; }
         .brand span { color: var(--accent); font-weight: 300; }
         
         .add-btn {
-            width: 42px; height: 42px; background: #0f172a; color: white;
+            width: 36px; height: 36px; background: #0f172a; color: white;
             border-radius: 50%; border: none;
             display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.2); cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2); cursor: pointer;
         }
 
-        /* MAIN CONTENT */
-        main { flex: 1; padding: 85px 16px 85px 16px; overflow-y: auto; }
-        .view { display: none; animation: fadeIn 0.3s; }
-        .view.active { display: block; }
+        /* MAIN */
+        main { flex: 1; padding: 80px 16px 80px 16px; overflow-y: auto; }
+        .view { display: none; }
+        .view.active { display: block; animation: fadeIn 0.3s; }
 
-        /* TASK CARD */
+        /* TASK LIST */
         .task-card {
-            background: var(--surface); padding: 16px; border-radius: 16px;
-            margin-bottom: 12px; display: flex; align-items: center; gap: 12px;
+            background: var(--surface); padding: 16px; border-radius: 12px;
+            margin-bottom: 10px; display: flex; align-items: center; gap: 12px;
             border: 1px solid var(--border); box-shadow: 0 2px 4px rgba(0,0,0,0.02);
             position: relative; overflow: hidden;
         }
-        /* Category Color Bars */
-        .task-card::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 6px; }
-        .task-card[data-cat="Work"]::before { background: #3b82f6; }
-        .task-card[data-cat="Personal"]::before { background: #f97316; }
-        .task-card[data-cat="Health"]::before { background: #ef4444; }
-        .task-card[data-cat="Shop"]::before { background: #10b981; }
-
-        .task-card.done { opacity: 0.6; }
-        .task-card.done h3 { text-decoration: line-through; color: var(--text-light); }
+        .bar { position: absolute; left: 0; top: 0; bottom: 0; width: 5px; }
+        .bar.Work { background: #3b82f6; }
+        .bar.Personal { background: #f97316; }
+        .bar.Health { background: #ef4444; }
+        .bar.Shop { background: #10b981; }
 
         .checkbox {
-            width: 24px; height: 24px; border: 2px solid #cbd5e1; border-radius: 8px;
+            width: 22px; height: 22px; border: 2px solid #cbd5e1; border-radius: 6px;
             display: flex; align-items: center; justify-content: center;
         }
-        .task-card.done .checkbox { background: var(--accent); border-color: var(--accent); color: white; }
-        .checkbox svg { display: none; width: 16px; height: 16px; stroke-width: 3; }
+        .task-card.done .checkbox { background: var(--accent); border-color: var(--accent); }
+        .checkbox svg { display: none; width: 14px; height: 14px; stroke: white; stroke-width: 3; }
         .task-card.done .checkbox svg { display: block; }
+        
+        .task-card.done h3 { text-decoration: line-through; color: var(--text-light); }
+        .task-card.done { opacity: 0.6; }
 
-        .info { flex: 1; overflow: hidden; }
-        .meta { display: flex; gap: 8px; font-size: 10px; font-weight: 800; color: var(--text-light); text-transform: uppercase; margin-bottom: 4px; }
-        h3 { margin: 0; font-size: 16px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .info { flex: 1; }
+        .meta { display: flex; gap: 10px; font-size: 10px; font-weight: 800; color: var(--text-light); text-transform: uppercase; margin-bottom: 4px; }
+        h3 { margin: 0; font-size: 15px; font-weight: 700; }
         
-        .icons { display: flex; gap: 6px; margin-left: auto; }
-        .icon-star { color: #fbbf24; fill: #fbbf24; }
-        .icon-flag { color: #ef4444; fill: #ef4444; }
-        
-        .del-btn { padding: 8px; color: #cbd5e1; background: none; border: none; }
+        .del-btn { background: none; border: none; color: #cbd5e1; padding: 5px; }
 
         /* CALENDAR */
         .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; text-align: center; }
         .day-head { font-size: 10px; font-weight: bold; color: var(--text-light); margin-bottom: 5px; }
         .day {
-            aspect-ratio: 1; background: white; border: 1px solid var(--border); border-radius: 10px;
+            aspect-ratio: 1; background: white; border: 1px solid var(--border); border-radius: 8px;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            font-size: 14px; font-weight: bold; position: relative;
+            font-size: 13px; font-weight: bold; position: relative;
         }
         .day.today { background: var(--primary); color: white; border-color: var(--primary); }
-        .dot { width: 5px; height: 5px; background: var(--accent); border-radius: 50%; margin-top: 2px; display: none; }
+        .dot { width: 4px; height: 4px; background: var(--accent); border-radius: 50%; margin-top: 2px; display: none; }
         .day.has-task .dot { display: block; }
         .day.today .dot { background: white; }
 
         /* TIMER */
         .timer-box { text-align: center; padding-top: 40px; }
-        .time-display { font-size: 70px; font-weight: 900; color: var(--text); margin: 30px 0; font-variant-numeric: tabular-nums; }
-        .ctrl-btn {
-            width: 72px; height: 72px; border-radius: 50%; border: none;
+        .time-text { font-size: 64px; font-weight: 900; color: var(--text); margin: 20px 0; font-variant-numeric: tabular-nums; }
+        .btn-circle {
+            width: 64px; height: 64px; border-radius: 50%; border: none;
             display: inline-flex; align-items: center; justify-content: center;
-            color: white; margin: 0 10px; cursor: pointer;
+            margin: 0 10px; cursor: pointer; color: white;
         }
-        .btn-play { background: var(--primary); box-shadow: 0 8px 20px rgba(249, 115, 22, 0.4); }
-        .btn-reset { background: #e2e8f0; color: #64748b; width: 60px; height: 60px; }
-
-        /* SETTINGS */
-        .stat-card { background: white; padding: 20px; border-radius: 20px; border: 1px solid var(--border); text-align: center; }
-        .stat-num { font-size: 32px; font-weight: 900; color: var(--primary); }
-        .stat-lbl { font-size: 10px; font-weight: 800; color: var(--text-light); text-transform: uppercase; }
-        .reset-btn { width: 100%; padding: 16px; background: #fee2e2; color: #ef4444; border: none; border-radius: 16px; font-weight: 700; margin-top: 20px; }
+        .play { background: var(--primary); box-shadow: 0 8px 20px rgba(249, 115, 22, 0.4); }
+        .reset { background: #e2e8f0; color: #64748b; width: 50px; height: 50px; }
 
         /* NAV */
         nav {
-            position: fixed; bottom: 0; width: 100%; height: 65px; background: white;
-            border-top: 1px solid var(--border); display: flex; justify-content: space-around; align-items: center; z-index: 100;
+            position: fixed; bottom: 0; width: 100%; height: 60px;
+            background: var(--surface); border-top: 1px solid var(--border);
+            display: flex; justify-content: space-around; align-items: center; z-index: 100;
         }
-        .nav-item { border: none; background: none; display: flex; flex-direction: column; align-items: center; color: var(--text-light); font-size: 10px; font-weight: 700; gap: 4px; }
+        .nav-item { border: none; background: none; display: flex; flex-direction: column; align-items: center; color: var(--text-light); font-size: 10px; font-weight: 700; gap: 3px; }
         .nav-item.active { color: var(--primary); }
 
         /* MODAL */
         #modal {
             position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(15, 23, 42, 0.6); z-index: 200; display: none; align-items: flex-end;
+            background: rgba(0,0,0,0.5); z-index: 200; display: none; align-items: flex-end;
         }
-        .sheet { background: white; width: 100%; padding: 25px; border-radius: 25px 25px 0 0; animation: slideUp 0.3s; }
+        .sheet { background: white; width: 100%; padding: 20px; border-radius: 20px 20px 0 0; animation: slideUp 0.3s; }
+        .label { font-size: 10px; font-weight: bold; color: var(--text-light); margin: 15px 0 5px 0; display: block; }
+        input { width: 100%; padding: 12px; font-size: 16px; border: 1px solid #ccc; border-radius: 8px; }
         
-        .form-label { font-size: 10px; font-weight: bold; color: var(--text-light); margin: 15px 0 8px 0; display: block; uppercase; letter-spacing: 0.5px; }
-        input[type="text"], input[type="date"] {
-            width: 100%; padding: 14px; font-size: 16px; border: 1px solid #ccc;
-            border-radius: 12px; background: white; font-family: inherit;
-        }
-        
-        .chips { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 5px; }
+        .chips { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 5px; }
         .chip {
-            padding: 8px 16px; border: 1px solid var(--border); border-radius: 20px;
+            padding: 8px 12px; border: 1px solid var(--border); border-radius: 16px;
             font-size: 12px; font-weight: bold; white-space: nowrap; color: var(--text-light);
         }
         .chip.selected { background: var(--primary); color: white; border-color: var(--primary); }
         
-        .opts { display: flex; gap: 10px; margin-top: 20px; margin-bottom: 25px; }
-        .opt-btn {
-            flex: 1; padding: 12px; border: 1px solid var(--border); border-radius: 12px;
-            text-align: center; font-weight: bold; font-size: 14px; display: flex; justify-content: center; gap: 6px;
-        }
-        .opt-btn.active { background: #fff7ed; border-color: var(--primary); color: var(--primary); }
-        
-        .save-btn { width: 100%; padding: 16px; background: #0f172a; color: white; border: none; border-radius: 16px; font-weight: bold; font-size: 16px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+        .save-btn { width: 100%; padding: 15px; background: #0f172a; color: white; border: none; border-radius: 12px; font-weight: bold; font-size: 16px; margin-top: 20px; }
 
         @keyframes fadeIn { from {opacity:0} to {opacity:1} }
         @keyframes slideUp { from {transform:translateY(100%)} to {transform:translateY(0)} }
@@ -195,12 +170,12 @@
         <!-- TIMER -->
         <div id="view-timer" class="view">
             <div class="timer-box">
-                <div style="font-size:12px; font-weight:bold; color:#94a3b8; letter-spacing:1px;">FOCUS SESSION</div>
-                <div class="time-display" id="timerDisplay">25:00</div>
-                <button class="ctrl-btn btn-play" onclick="app.toggleTimer()" id="playBtn">
-                    <svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                <div style="font-size:12px; font-weight:bold; color:#94a3b8;">FOCUS TIMER</div>
+                <div class="time-text" id="timerDisplay">25:00</div>
+                <button class="btn-circle play" onclick="app.toggleTimer()" id="playBtn">
+                    <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
                 </button>
-                <button class="ctrl-btn btn-reset" onclick="app.resetTimer()">
+                <button class="btn-circle reset" onclick="app.resetTimer()">
                     <svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>
                 </button>
             </div>
@@ -208,14 +183,14 @@
 
         <!-- SETTINGS -->
         <div id="view-settings" class="view">
-            <div class="stat-card">
-                <h3 style="margin-top:0">Stats</h3>
+            <div style="background:white; padding:20px; border-radius:12px; border:1px solid #e2e8f0; text-align:center;">
+                <h3>Stats</h3>
                 <div style="display:flex; justify-content:space-around;">
-                    <div><div class="stat-num" id="sTotal">0</div><div class="stat-lbl">Total</div></div>
-                    <div><div class="stat-num" id="sDone">0</div><div class="stat-lbl">Done</div></div>
+                    <div><div style="font-size:30px; font-weight:900; color:#f97316;" id="sTotal">0</div><div style="font-size:10px; font-weight:bold; color:#94a3b8">TOTAL</div></div>
+                    <div><div style="font-size:30px; font-weight:900; color:#f97316;" id="sDone">0</div><div style="font-size:10px; font-weight:bold; color:#94a3b8">DONE</div></div>
                 </div>
             </div>
-            <button class="reset-btn" onclick="app.wipe()">Reset All Data</button>
+            <button class="save-btn" style="background:#ef4444" onclick="app.wipe()">Reset All Data</button>
         </div>
     </main>
 
@@ -233,7 +208,7 @@
             Timer
         </button>
         <button class="nav-item" id="n4" onclick="app.nav('settings', this)">
-            <svg><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+            <svg><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
             Settings
         </button>
     </nav>
@@ -241,123 +216,108 @@
     <!-- MODAL -->
     <div id="modal">
         <div class="sheet">
-            <div style="display:flex; justify-content:space-between; margin-bottom:15px;">
-                <h2 style="margin:0">New Task</h2>
-                <div onclick="app.closeModal()" style="padding:5px;">✕</div>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                <h2 style="margin:0; font-size:18px;">New Task</h2>
+                <div onclick="app.closeModal()" style="padding:10px; color:#94a3b8;">✕</div>
             </div>
             
             <input type="text" id="tInput" placeholder="What needs to be done?">
             
-            <span class="form-label">DUE DATE</span>
+            <span class="label">DUE DATE</span>
             <input type="date" id="dInput">
             
-            <span class="form-label">CATEGORY</span>
+            <span class="label">CATEGORY</span>
             <div class="chips" id="catRow"></div>
-            
-            <div class="opts">
-                <button class="opt-btn" id="btnStar" onclick="app.togOpt('star')">
-                    <svg style="width:16px; height:16px"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg> Star
-                </button>
-                <button class="opt-btn" id="btnFlag" onclick="app.togOpt('flag')">
-                    <svg style="width:16px; height:16px"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path><line x1="4" y1="22" x2="4" y2="15"></line></svg> Flag
-                </button>
-            </div>
 
-            <button class="save-btn" onclick="app.saveTask()">Save Task</button>
+            <button class="save-btn" onclick="app.saveTask()">Create Task</button>
         </div>
     </div>
 
     <script>
-        const app = {
+        var app = {
             data: [],
             cats: ['Work', 'Personal', 'Health', 'Shop'],
-            temp: { cat:'Personal', star:false, flag:false },
+            temp: { cat:'Personal' },
             timer: null,
             time: 1500,
             isRun: false,
 
             init: function() {
                 try {
-                    const str = localStorage.getItem('mazi_final_v8');
+                    var str = localStorage.getItem('mazi_db_final');
                     if(str) this.data = JSON.parse(str);
                 } catch(e) {}
                 
-                // Set default date to today
-                document.getElementById('dInput').value = new Date().toISOString().split('T')[0];
-                
+                // Default date
+                var today = new Date().toISOString().split('T')[0];
+                document.getElementById('dInput').value = today;
+
                 this.render();
                 this.renderCal();
                 this.stats();
             },
 
-            // NAV
             nav: function(v, btn) {
-                document.querySelectorAll('.view').forEach(e => e.classList.remove('active'));
-                document.getElementById('view-'+v).classList.add('active');
+                var views = document.querySelectorAll('.view');
+                for(var i=0; i<views.length; i++) views[i].style.display = 'none';
+                document.getElementById('view-'+v).style.display = 'block';
                 
-                document.querySelectorAll('.nav-item').forEach(e => e.classList.remove('active'));
-                btn.classList.add('active');
+                var navs = document.querySelectorAll('.nav-item');
+                for(var j=0; j<navs.length; j++) navs[j].style.color = '#94a3b8';
+                btn.style.color = '#f97316';
             },
 
-            // TASKS
             render: function() {
-                const list = document.getElementById('taskList');
+                var list = document.getElementById('taskList');
                 list.innerHTML = '';
                 
                 if(this.data.length === 0) {
-                    list.innerHTML = '<div style="text-align:center; padding-top:60px; color:#cbd5e1; font-weight:bold;">No tasks yet</div>';
+                    list.innerHTML = '<div style="text-align:center; padding-top:60px; color:#cbd5e1;">No tasks yet</div>';
                     return;
                 }
 
-                this.data.forEach((t, i) => {
-                    let icons = '';
-                    if(t.star) icons += '<svg class="icon-star"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>';
-                    if(t.flag) icons += '<svg class="icon-flag"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path><line x1="4" y1="22" x2="4" y2="15"></line></svg>';
+                for(var i=0; i<this.data.length; i++) {
+                    var t = this.data[i];
+                    var cls = t.done ? 'task-card done' : 'task-card';
                     
-                    const cls = t.done ? 'task-card done' : 'task-card';
-                    
-                    list.innerHTML += `
-                    <div class="${cls}" data-cat="${t.cat}">
+                    var html = `
+                    <div class="${cls}">
+                        <div class="bar ${t.cat}"></div>
                         <div class="checkbox" onclick="app.toggle(${i})">
                             <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
                         </div>
                         <div class="info">
-                            <div class="meta">
-                                <span style="margin-right:10px">${t.cat}</span>
-                                <span>${t.date || ''}</span>
-                            </div>
+                            <div class="meta"><span>${t.cat}</span> • <span>${t.date}</span></div>
                             <h3>${t.title}</h3>
-                            <div class="icons">${icons}</div>
                         </div>
                         <button class="del-btn" onclick="app.del(${i})">
                             <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
                         </button>
                     </div>`;
-                });
+                    list.innerHTML += html;
+                }
                 this.stats();
             },
 
             saveTask: function() {
-                const title = document.getElementById('tInput').value;
-                const date = document.getElementById('dInput').value;
+                var title = document.getElementById('tInput').value;
+                var date = document.getElementById('dInput').value;
+                
                 if(!title) return;
 
                 this.data.unshift({
                     title: title,
                     date: date,
                     cat: this.temp.cat,
-                    star: this.temp.star,
-                    flag: this.temp.flag,
                     done: false
                 });
+                
                 this.save();
                 this.render();
                 this.renderCal();
                 this.closeModal();
-                
-                // Switch to tasks
-                this.nav('tasks', document.getElementById('n1'));
                 document.getElementById('tInput').value = '';
+                this.nav('tasks', document.getElementById('n1'));
             },
 
             toggle: function(i) {
@@ -378,26 +338,96 @@
 
             // CALENDAR
             renderCal: function() {
-                const grid = document.getElementById('calGrid');
-                let html = '';
-                const heads = ['S','M','T','W','T','F','S'];
-                heads.forEach(h => html += `<div class="day-head">${h}</div>`);
+                var grid = document.getElementById('calGrid');
+                grid.innerHTML = '';
+                var heads = ['S','M','T','W','T','F','S'];
+                for(var h=0; h<7; h++) {
+                    grid.innerHTML += `<div class="day-head">${heads[h]}</div>`;
+                }
 
-                const today = new Date().getDate();
-                // Simple 30 day view
-                for(let i=1; i<=30; i++) {
-                    // Format i to YYYY-MM-DD based on current month/year for matching
-                    // Simplified logic: Check if any task has 'date' ending in this day number
-                    // Better logic: Match full string. 
-                    // For this version, we'll check day number match if month matches
+                var today = new Date().getDate();
+                
+                // Simple 1-30 view
+                for(var i=1; i<=30; i++) {
+                    var dayStr = (i<10) ? '0'+i : i;
+                    var has = false;
+                    // Check if any task matches this day number (simplified logic for stability)
+                    for(var t=0; t<this.data.length; t++) {
+                        if(this.data[t].date.endsWith('-'+dayStr) && !this.data[t].done) has = true;
+                    }
                     
-                    const now = new Date();
-                    const checkDate = new Date(now.getFullYear(), now.getMonth(), i).toISOString().split('T')[0];
-                    
-                    let has = this.data.some(t => t.date === checkDate && !t.done);
-                    
-                    let cls = 'day';
-                    if(i === today) cls += ' today';
+                    var cls = 'day';
+                    if(i == today) cls += ' today';
                     if(has) cls += ' has-task';
                     
-                    html += `<div class="${cls}">${i}<div class="dot"></
+                    grid.innerHTML += `<div class="${cls}">${i}<div class="dot"></div></div>`;
+                }
+            },
+
+            // TIMER
+            toggleTimer: function() {
+                var btn = document.getElementById('playBtn');
+                var icon = btn.firstElementChild;
+                if(this.isRun) {
+                    clearInterval(this.timer);
+                    this.isRun = false;
+                    icon.innerHTML = '<polygon points="5 3 19 12 5 21 5 3"></polygon>';
+                } else {
+                    this.isRun = true;
+                    icon.innerHTML = '<rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect>';
+                    this.timer = setInterval(() => {
+                        this.time--;
+                        if(this.time <= 0) {
+                            clearInterval(this.timer);
+                            this.isRun = false;
+                            alert("Time Up!");
+                            this.time = 1500;
+                            icon.innerHTML = '<polygon points="5 3 19 12 5 21 5 3"></polygon>';
+                        }
+                        this.updateTime();
+                    }, 1000);
+                }
+            },
+            resetTimer: function() {
+                clearInterval(this.timer);
+                this.isRun = false;
+                this.time = 1500;
+                document.getElementById('playBtn').firstElementChild.innerHTML = '<polygon points="5 3 19 12 5 21 5 3"></polygon>';
+                this.updateTime();
+            },
+            updateTime: function() {
+                var m = Math.floor(this.time / 60);
+                var s = this.time % 60;
+                if(s<10) s='0'+s;
+                document.getElementById('timerDisplay').innerText = m + ':' + s;
+            },
+
+            // MODAL
+            openModal: function() {
+                document.getElementById('modal').style.display = 'flex';
+                this.temp.cat = 'Personal';
+                this.renderChips();
+            },
+            closeModal: function() { document.getElementById('modal').style.display = 'none'; },
+            
+            renderChips: function() {
+                var div = document.getElementById('catRow');
+                div.innerHTML = '';
+                for(var i=0; i<this.cats.length; i++) {
+                    var c = this.cats[i];
+                    var cls = (this.temp.cat == c) ? 'chip selected' : 'chip';
+                    div.innerHTML += `<div class="${cls}" onclick="app.setCat('${c}')">${c}</div>`;
+                }
+            },
+            setCat: function(c) { this.temp.cat = c; this.renderChips(); },
+
+            // STATS
+            stats: function() {
+                document.getElementById('sTotal').innerText = this.data.length;
+                var d = 0;
+                for(var i=0; i<this.data.length; i++) if(this.data[i].done) d++;
+                document.getElementById('sDone').innerText = d;
+            },
+            wipe: function() {
+                if(confirm('Delete All?')) { this.data=[]; this.save(); thi
+
