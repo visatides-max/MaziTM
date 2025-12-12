@@ -1,372 +1,403 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>MaziTM</title>
-    
-    <!-- LIBRARIES (Loaded from fast CDNs) -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
-
-    <!-- CUSTOM CONFIG -->
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: '#f97316', // Orange 500
-                        secondary: '#0ea5e9', // Sky 500
-                        dark: '#0f172a',
-                        surface: '#ffffff',
-                        bg: '#f8fafc'
-                    },
-                    fontFamily: { sans: ['Inter', 'sans-serif'] }
-                }
-            }
-        }
-    </script>
     <style>
-        body { -webkit-tap-highlight-color: transparent; background-color: #f8fafc; user-select: none; }
-        /* Hide Scrollbar but keep functionality */
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        /* Animations */
-        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-        .animate-slide-up { animation: slideUp 0.3s ease-out forwards; }
+        /* --- PREMIUM CSS (No Tailwind needed) --- */
+        :root {
+            --primary: #f97316; /* Orange */
+            --primary-dark: #ea580c;
+            --accent: #0ea5e9; /* Sky Blue */
+            --bg: #f8fafc;
+            --surface: #ffffff;
+            --text: #1e293b;
+            --text-light: #94a3b8;
+            --border: #e2e8f0;
+            --danger: #ef4444;
+            --success: #10b981;
+        }
+        
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
+        
+        body {
+            margin: 0; padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--bg); color: var(--text);
+            height: 100vh; display: flex; flex-direction: column;
+            user-select: none;
+        }
+
+        /* ICONS */
+        svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+        /* HEADER */
+        header {
+            height: 65px; background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 20px; position: fixed; top: 0; width: 100%; z-index: 100;
+        }
+        .logo-box {
+            width: 36px; height: 36px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border-radius: 10px; color: white;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 900; font-size: 20px;
+            box-shadow: 0 4px 10px rgba(249, 115, 22, 0.3);
+        }
+        .brand { font-size: 20px; font-weight: 800; margin-left: 10px; }
+        .brand span { color: var(--accent); font-weight: 300; }
+        
+        .add-btn {
+            width: 42px; height: 42px; background: #0f172a; color: white;
+            border-radius: 50%; border: none;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.2); cursor: pointer;
+        }
+
+        /* MAIN CONTENT */
+        main { flex: 1; padding: 85px 16px 85px 16px; overflow-y: auto; }
+        .view { display: none; animation: fadeIn 0.3s; }
+        .view.active { display: block; }
+
+        /* TASK CARD */
+        .task-card {
+            background: var(--surface); padding: 16px; border-radius: 16px;
+            margin-bottom: 12px; display: flex; align-items: center; gap: 12px;
+            border: 1px solid var(--border); box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            position: relative; overflow: hidden;
+        }
+        /* Category Color Bars */
+        .task-card::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 6px; }
+        .task-card[data-cat="Work"]::before { background: #3b82f6; }
+        .task-card[data-cat="Personal"]::before { background: #f97316; }
+        .task-card[data-cat="Health"]::before { background: #ef4444; }
+        .task-card[data-cat="Shop"]::before { background: #10b981; }
+
+        .task-card.done { opacity: 0.6; }
+        .task-card.done h3 { text-decoration: line-through; color: var(--text-light); }
+
+        .checkbox {
+            width: 24px; height: 24px; border: 2px solid #cbd5e1; border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .task-card.done .checkbox { background: var(--accent); border-color: var(--accent); color: white; }
+        .checkbox svg { display: none; width: 16px; height: 16px; stroke-width: 3; }
+        .task-card.done .checkbox svg { display: block; }
+
+        .info { flex: 1; overflow: hidden; }
+        .meta { display: flex; gap: 8px; font-size: 10px; font-weight: 800; color: var(--text-light); text-transform: uppercase; margin-bottom: 4px; }
+        h3 { margin: 0; font-size: 16px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        
+        .icons { display: flex; gap: 6px; margin-left: auto; }
+        .icon-star { color: #fbbf24; fill: #fbbf24; }
+        .icon-flag { color: #ef4444; fill: #ef4444; }
+        
+        .del-btn { padding: 8px; color: #cbd5e1; background: none; border: none; }
+
+        /* CALENDAR */
+        .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; text-align: center; }
+        .day-head { font-size: 10px; font-weight: bold; color: var(--text-light); margin-bottom: 5px; }
+        .day {
+            aspect-ratio: 1; background: white; border: 1px solid var(--border); border-radius: 10px;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            font-size: 14px; font-weight: bold; position: relative;
+        }
+        .day.today { background: var(--primary); color: white; border-color: var(--primary); }
+        .dot { width: 5px; height: 5px; background: var(--accent); border-radius: 50%; margin-top: 2px; display: none; }
+        .day.has-task .dot { display: block; }
+        .day.today .dot { background: white; }
+
+        /* TIMER */
+        .timer-box { text-align: center; padding-top: 40px; }
+        .time-display { font-size: 70px; font-weight: 900; color: var(--text); margin: 30px 0; font-variant-numeric: tabular-nums; }
+        .ctrl-btn {
+            width: 72px; height: 72px; border-radius: 50%; border: none;
+            display: inline-flex; align-items: center; justify-content: center;
+            color: white; margin: 0 10px; cursor: pointer;
+        }
+        .btn-play { background: var(--primary); box-shadow: 0 8px 20px rgba(249, 115, 22, 0.4); }
+        .btn-reset { background: #e2e8f0; color: #64748b; width: 60px; height: 60px; }
+
+        /* SETTINGS */
+        .stat-card { background: white; padding: 20px; border-radius: 20px; border: 1px solid var(--border); text-align: center; }
+        .stat-num { font-size: 32px; font-weight: 900; color: var(--primary); }
+        .stat-lbl { font-size: 10px; font-weight: 800; color: var(--text-light); text-transform: uppercase; }
+        .reset-btn { width: 100%; padding: 16px; background: #fee2e2; color: #ef4444; border: none; border-radius: 16px; font-weight: 700; margin-top: 20px; }
+
+        /* NAV */
+        nav {
+            position: fixed; bottom: 0; width: 100%; height: 65px; background: white;
+            border-top: 1px solid var(--border); display: flex; justify-content: space-around; align-items: center; z-index: 100;
+        }
+        .nav-item { border: none; background: none; display: flex; flex-direction: column; align-items: center; color: var(--text-light); font-size: 10px; font-weight: 700; gap: 4px; }
+        .nav-item.active { color: var(--primary); }
+
+        /* MODAL */
+        #modal {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(15, 23, 42, 0.6); z-index: 200; display: none; align-items: flex-end;
+        }
+        .sheet { background: white; width: 100%; padding: 25px; border-radius: 25px 25px 0 0; animation: slideUp 0.3s; }
+        
+        .form-label { font-size: 10px; font-weight: bold; color: var(--text-light); margin: 15px 0 8px 0; display: block; uppercase; letter-spacing: 0.5px; }
+        input[type="text"], input[type="date"] {
+            width: 100%; padding: 14px; font-size: 16px; border: 1px solid #ccc;
+            border-radius: 12px; background: white; font-family: inherit;
+        }
+        
+        .chips { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 5px; }
+        .chip {
+            padding: 8px 16px; border: 1px solid var(--border); border-radius: 20px;
+            font-size: 12px; font-weight: bold; white-space: nowrap; color: var(--text-light);
+        }
+        .chip.selected { background: var(--primary); color: white; border-color: var(--primary); }
+        
+        .opts { display: flex; gap: 10px; margin-top: 20px; margin-bottom: 25px; }
+        .opt-btn {
+            flex: 1; padding: 12px; border: 1px solid var(--border); border-radius: 12px;
+            text-align: center; font-weight: bold; font-size: 14px; display: flex; justify-content: center; gap: 6px;
+        }
+        .opt-btn.active { background: #fff7ed; border-color: var(--primary); color: var(--primary); }
+        
+        .save-btn { width: 100%; padding: 16px; background: #0f172a; color: white; border: none; border-radius: 16px; font-weight: bold; font-size: 16px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+
+        @keyframes fadeIn { from {opacity:0} to {opacity:1} }
+        @keyframes slideUp { from {transform:translateY(100%)} to {transform:translateY(0)} }
     </style>
 </head>
 <body>
-    <div id="root"></div>
 
-    <script type="text/babel">
-        const { useState, useEffect, useMemo } = React;
+    <header>
+        <div style="display:flex; align-items:center;">
+            <div class="logo-box">M</div>
+            <div class="brand">Mazi<span>TM</span></div>
+        </div>
+        <button class="add-btn" onclick="app.openModal()">
+            <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"></path></svg>
+        </button>
+    </header>
 
-        // --- ICONS COMPONENT ---
-        const Icon = ({ name, size = 20, className = "" }) => {
-            useEffect(() => { lucide.createIcons(); });
-            return <i data-lucide={name} width={size} height={size} className={className}></i>;
-        };
+    <main>
+        <!-- TASKS -->
+        <div id="view-tasks" class="view active">
+            <div id="taskList"></div>
+        </div>
 
-        // --- APP LOGIC ---
-        function App() {
-            // DATA STATE
-            const [tasks, setTasks] = useState(() => {
-                try { return JSON.parse(localStorage.getItem('mazi_pro_v1') || '[]'); } 
-                catch { return []; }
-            });
-            
-            // VIEW STATE
-            const [view, setView] = useState('tasks'); // tasks, cal, timer, settings
-            const [modalOpen, setModalOpen] = useState(false);
-            const [filterDate, setFilterDate] = useState(null); // For Calendar filtering
+        <!-- CALENDAR -->
+        <div id="view-cal" class="view">
+            <h2 style="margin-top:0">This Month</h2>
+            <div class="cal-grid" id="calGrid"></div>
+        </div>
 
-            // FORM STATE
-            const [input, setInput] = useState("");
-            const [cat, setCat] = useState("Personal");
-            const [dueDate, setDueDate] = useState(new Date().toISOString().split('T')[0]);
-            const [opts, setOpts] = useState({ star: false, flag: false });
+        <!-- TIMER -->
+        <div id="view-timer" class="view">
+            <div class="timer-box">
+                <div style="font-size:12px; font-weight:bold; color:#94a3b8; letter-spacing:1px;">FOCUS SESSION</div>
+                <div class="time-display" id="timerDisplay">25:00</div>
+                <button class="ctrl-btn btn-play" onclick="app.toggleTimer()" id="playBtn">
+                    <svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                </button>
+                <button class="ctrl-btn btn-reset" onclick="app.resetTimer()">
+                    <svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>
+                </button>
+            </div>
+        </div>
 
-            // TIMER STATE
-            const [timeLeft, setTimeLeft] = useState(1500);
-            const [timerActive, setTimerActive] = useState(false);
-
-            // SAVE DATA
-            useEffect(() => { localStorage.setItem('mazi_pro_v1', JSON.stringify(tasks)); }, [tasks]);
-            
-            // REFRESH ICONS
-            useEffect(() => { lucide.createIcons(); });
-
-            // TIMER LOOP
-            useEffect(() => {
-                let interval = null;
-                if (timerActive && timeLeft > 0) {
-                    interval = setInterval(() => setTimeLeft(t => t - 1), 1000);
-                } else if (timeLeft === 0) {
-                    setTimerActive(false);
-                    setTimeLeft(1500);
-                    // Simple notification logic could go here
-                }
-                return () => clearInterval(interval);
-            }, [timerActive, timeLeft]);
-
-            // --- HANDLERS ---
-
-            const handleSave = () => {
-                if (!input.trim()) return;
-                const newTask = {
-                    id: Date.now(),
-                    title: input,
-                    cat,
-                    date: dueDate,
-                    star: opts.star,
-                    flag: opts.flag,
-                    completed: false
-                };
-                setTasks([newTask, ...tasks]);
-                setModalOpen(false);
-                setInput("");
-                // Reset defaults
-                setOpts({ star: false, flag: false });
-                setCat("Personal");
-            };
-
-            const toggleTask = (id) => {
-                setTasks(tasks.map(t => t.id === id ? { ...t, completed: !t.completed } : t));
-            };
-
-            const deleteTask = (id) => {
-                if (confirm("Delete this task?")) {
-                    setTasks(tasks.filter(t => t.id !== id));
-                }
-            };
-
-            const formatTime = (s) => {
-                const mins = Math.floor(s / 60);
-                const secs = s % 60;
-                return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
-            };
-
-            // --- SUB-COMPONENTS (RENDERERS) ---
-
-            const Categories = [
-                { name: 'Work', bg: 'bg-blue-100', txt: 'text-blue-600' },
-                { name: 'Personal', bg: 'bg-orange-100', txt: 'text-orange-600' },
-                { name: 'Health', bg: 'bg-rose-100', txt: 'text-rose-600' },
-                { name: 'Shop', bg: 'bg-emerald-100', txt: 'text-emerald-600' }
-            ];
-
-            const TaskCard = ({ t }) => {
-                const c = Categories.find(x => x.name === t.cat) || Categories[1];
-                return (
-                    <div className={`bg-white p-4 rounded-2xl mb-3 border border-slate-100 shadow-sm flex items-center gap-3 transition-all ${t.completed ? 'opacity-50' : ''}`}>
-                        <button onClick={() => toggleTask(t.id)} className={`w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-colors ${t.completed ? 'bg-secondary border-secondary text-white' : 'border-slate-300'}`}>
-                            {t.completed && <Icon name="check" size={14} />}
-                        </button>
-                        <div className="flex-1 overflow-hidden">
-                            <div className="flex items-center gap-2 mb-1">
-                                <span className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded-md ${c.bg} ${c.txt}`}>{t.cat}</span>
-                                {t.star && <Icon name="star" size={12} className="text-amber-400 fill-current" />}
-                                {t.flag && <Icon name="flag" size={12} className="text-red-500 fill-current" />}
-                            </div>
-                            <h3 className={`font-semibold text-sm truncate ${t.completed ? 'line-through text-slate-400' : 'text-slate-800'}`}>{t.title}</h3>
-                            <p className="text-[10px] text-slate-400 font-medium mt-0.5">{t.date}</p>
-                        </div>
-                        <button onClick={() => deleteTask(t.id)} className="p-2 text-slate-300 hover:text-red-500">
-                            <Icon name="trash-2" size={18} />
-                        </button>
-                    </div>
-                );
-            };
-
-            const CalendarView = () => {
-                // Generate simple grid for current month
-                const days = Array.from({ length: 30 }, (_, i) => {
-                    const d = new Date();
-                    d.setDate(new Date().getDate() + (i - new Date().getDate() + 1)); // Just a simple 1-30 logic for demo
-                    // Better logic: get true days of month. Let's just do next 14 days for UI clarity
-                    const dateObj = new Date();
-                    dateObj.setDate(dateObj.getDate() + i - 3); // Start a few days back
-                    return dateObj.toISOString().split('T')[0]; 
-                });
-
-                return (
-                    <div className="space-y-4">
-                        <div className="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm">
-                            <h2 className="font-bold text-lg mb-4 text-slate-800">Schedule</h2>
-                            <div className="flex overflow-x-auto gap-3 pb-2 no-scrollbar">
-                                {days.map((dateStr, idx) => {
-                                    const dateObj = new Date(dateStr);
-                                    const dayNum = dateObj.getDate();
-                                    const dayName = dateObj.toLocaleDateString('en-US', { weekday: 'short' });
-                                    const isSelected = filterDate === dateStr;
-                                    const hasTask = tasks.some(t => t.date === dateStr && !t.completed);
-                                    
-                                    return (
-                                        <button key={idx} onClick={() => setFilterDate(isSelected ? null : dateStr)} 
-                                            className={`flex-shrink-0 w-14 h-16 rounded-xl flex flex-col items-center justify-center border-2 transition-all ${isSelected ? 'bg-primary border-primary text-white shadow-lg' : 'bg-white border-slate-100 text-slate-500'}`}>
-                                            <span className="text-[10px] font-bold uppercase">{dayName}</span>
-                                            <span className="text-lg font-black">{dayNum}</span>
-                                            {hasTask && <div className={`w-1.5 h-1.5 rounded-full mt-1 ${isSelected ? 'bg-white' : 'bg-secondary'}`}></div>}
-                                        </button>
-                                    );
-                                })}
-                            </div>
-                        </div>
-                        
-                        <div>
-                            <h3 className="font-bold text-slate-400 text-xs uppercase mb-3 px-1">
-                                {filterDate ? `Tasks for ${filterDate}` : 'All Upcoming Tasks'}
-                            </h3>
-                            {tasks
-                                .filter(t => filterDate ? t.date === filterDate : true)
-                                .map(t => <TaskCard key={t.id} t={t} />)
-                            }
-                            {tasks.filter(t => filterDate ? t.date === filterDate : true).length === 0 && (
-                                <div className="text-center py-10 text-slate-300 text-sm font-medium">No tasks for this day</div>
-                            )}
-                        </div>
-                    </div>
-                );
-            };
-
-            // --- MAIN RENDER ---
-            return (
-                <div className="flex flex-col h-screen overflow-hidden">
-                    
-                    {/* Header */}
-                    <header className="h-16 bg-white border-b border-slate-100 flex items-center justify-between px-5 fixed top-0 w-full z-20">
-                        <div className="flex items-center gap-2">
-                            <div className="w-9 h-9 bg-gradient-to-br from-primary to-orange-600 rounded-xl flex items-center justify-center text-white font-black text-xl shadow-lg shadow-orange-500/20">M</div>
-                            <h1 className="text-xl font-bold text-slate-800 tracking-tight">Mazi<span className="text-secondary font-light">TM</span></h1>
-                        </div>
-                        <button onClick={() => setModalOpen(true)} className="w-10 h-10 bg-dark rounded-full flex items-center justify-center text-white shadow-xl active:scale-95 transition-transform">
-                            <Icon name="plus" />
-                        </button>
-                    </header>
-
-                    {/* Content */}
-                    <main className="flex-1 pt-20 pb-24 px-4 overflow-y-auto">
-                        
-                        {view === 'tasks' && (
-                            <>
-                                <div className="flex items-center justify-between mb-4 px-1">
-                                    <h2 className="text-xl font-bold text-slate-800">My Tasks</h2>
-                                    <span className="bg-slate-100 text-slate-500 text-xs font-bold px-2 py-1 rounded-lg">{tasks.filter(t=>!t.completed).length} Pending</span>
-                                </div>
-                                {tasks.length === 0 ? (
-                                    <div className="flex flex-col items-center justify-center pt-20 opacity-40">
-                                        <Icon name="clipboard-list" size={48} className="mb-2 text-slate-400"/>
-                                        <p className="font-bold text-slate-400">Your list is empty</p>
-                                    </div>
-                                ) : (
-                                    tasks.sort((a,b) => Number(a.completed)-Number(b.completed)).map(t => <TaskCard key={t.id} t={t} />)
-                                )}
-                            </>
-                        )}
-
-                        {view === 'cal' && <CalendarView />}
-
-                        {view === 'timer' && (
-                            <div className="h-full flex flex-col items-center justify-center -mt-10">
-                                <div className="text-xs font-bold tracking-widest text-slate-400 mb-8">FOCUS TIMER</div>
-                                <div className="relative mb-10">
-                                    <svg className="w-64 h-64 transform -rotate-90">
-                                        <circle cx="128" cy="128" r="120" stroke="currentColor" strokeWidth="8" fill="transparent" className="text-slate-100" />
-                                        <circle cx="128" cy="128" r="120" stroke="currentColor" strokeWidth="8" fill="transparent" strokeDasharray={2 * Math.PI * 120} strokeDashoffset={2 * Math.PI * 120 * (1 - timeLeft/1500)} className="text-primary transition-all duration-1000 ease-linear" strokeLinecap="round" />
-                                    </svg>
-                                    <div className="absolute inset-0 flex items-center justify-center text-6xl font-black text-slate-800 font-mono tracking-tighter">
-                                        {formatTime(timeLeft)}
-                                    </div>
-                                </div>
-                                <div className="flex gap-6">
-                                    <button onClick={() => setTimerActive(!timerActive)} className="w-20 h-20 bg-dark rounded-full text-white flex items-center justify-center shadow-2xl active:scale-95 transition-transform">
-                                        <Icon name={timerActive ? "pause" : "play"} size={32} fill="currentColor" />
-                                    </button>
-                                    <button onClick={() => {setTimerActive(false); setTimeLeft(1500)}} className="w-14 h-14 bg-slate-200 rounded-full text-slate-600 flex items-center justify-center active:scale-95 transition-transform">
-                                        <Icon name="rotate-ccw" />
-                                    </button>
-                                </div>
-                            </div>
-                        )}
-
-                        {view === 'settings' && (
-                            <div className="space-y-6">
-                                <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm">
-                                    <h3 className="font-bold text-lg mb-4 text-slate-800">Overview</h3>
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div className="bg-slate-50 p-4 rounded-2xl text-center">
-                                            <div className="text-3xl font-black text-primary">{tasks.length}</div>
-                                            <div className="text-[10px] font-bold uppercase text-slate-400">Total Tasks</div>
-                                        </div>
-                                        <div className="bg-slate-50 p-4 rounded-2xl text-center">
-                                            <div className="text-3xl font-black text-emerald-500">{tasks.filter(t=>t.completed).length}</div>
-                                            <div className="text-[10px] font-bold uppercase text-slate-400">Completed</div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <button onClick={() => {if(confirm("Reset all data?")) setTasks([])}} className="w-full py-4 bg-red-50 text-red-500 font-bold rounded-2xl border border-red-100">
-                                    Delete All Data
-                                </button>
-                                <div className="text-center text-xs font-bold text-slate-300 mt-4">MaziTM Pro v1.0</div>
-                            </div>
-                        )}
-
-                    </main>
-
-                    {/* Bottom Nav */}
-                    <nav className="h-16 bg-white border-t border-slate-100 fixed bottom-0 w-full flex justify-around items-center z-40 pb-safe">
-                        {[
-                            { id: 'tasks', icon: 'check-square', label: 'Tasks' },
-                            { id: 'cal', icon: 'calendar', label: 'Calendar' },
-                            { id: 'timer', icon: 'timer', label: 'Timer' },
-                            { id: 'settings', icon: 'settings', label: 'Settings' },
-                        ].map(item => (
-                            <button key={item.id} onClick={() => setView(item.id)} className={`flex flex-col items-center gap-1 transition-colors ${view === item.id ? 'text-primary' : 'text-slate-400'}`}>
-                                <Icon name={item.icon} size={22} strokeWidth={view === item.id ? 2.5 : 2} />
-                                <span className="text-[10px] font-bold">{item.label}</span>
-                            </button>
-                        ))}
-                    </nav>
-
-                    {/* Add Task Modal */}
-                    {modalOpen && (
-                        <div className="fixed inset-0 bg-slate-900/60 z-50 flex items-end justify-center backdrop-blur-sm p-4 animate-fade-in">
-                            <div className="bg-white w-full max-w-md rounded-3xl p-6 animate-slide-up shadow-2xl">
-                                <div className="flex justify-between items-center mb-6">
-                                    <h2 className="text-xl font-bold text-slate-800">New Task</h2>
-                                    <button onClick={() => setModalOpen(false)} className="bg-slate-100 p-2 rounded-full text-slate-500"><Icon name="x" size={20} /></button>
-                                </div>
-
-                                <div className="space-y-5">
-                                    {/* Title Input */}
-                                    <input autoFocus value={input} onChange={e => setInput(e.target.value)} placeholder="What do you want to do?" className="w-full text-lg border-b-2 border-slate-100 py-3 outline-none focus:border-primary bg-transparent font-medium" />
-
-                                    {/* Date Picker (Native) */}
-                                    <div>
-                                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2 block">Due Date</label>
-                                        <input type="date" value={dueDate} onChange={e => setDueDate(e.target.value)} className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 font-bold text-slate-700 outline-none focus:ring-2 focus:ring-primary/20" />
-                                    </div>
-
-                                    {/* Categories */}
-                                    <div>
-                                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2 block">Category</label>
-                                        <div className="flex gap-2 overflow-x-auto pb-2 no-scrollbar">
-                                            {Categories.map(c => (
-                                                <button key={c.name} onClick={() => setCat(c.name)} className={`px-4 py-2 rounded-xl text-xs font-bold border transition-all whitespace-nowrap ${cat === c.name ? 'bg-dark text-white border-dark' : 'bg-white text-slate-500 border-slate-200'}`}>
-                                                    {c.name}
-                                                </button>
-                                            ))}
-                                        </div>
-                                    </div>
-
-                                    {/* Toggles */}
-                                    <div className="flex gap-3">
-                                        <button onClick={() => setOpts({ ...opts, star: !opts.star })} className={`flex-1 py-3 rounded-xl border flex items-center justify-center gap-2 font-bold transition-colors ${opts.star ? 'bg-amber-50 border-amber-200 text-amber-600' : 'border-slate-200 text-slate-400'}`}>
-                                            <Icon name="star" size={18} className={opts.star ? "fill-current" : ""} /> Star
-                                        </button>
-                                        <button onClick={() => setOpts({ ...opts, flag: !opts.flag })} className={`flex-1 py-3 rounded-xl border flex items-center justify-center gap-2 font-bold transition-colors ${opts.flag ? 'bg-red-50 border-red-200 text-red-600' : 'border-slate-200 text-slate-400'}`}>
-                                            <Icon name="flag" size={18} className={opts.flag ? "fill-current" : ""} /> Flag
-                                        </button>
-                                    </div>
-
-                                    <button onClick={handleSave} className="w-full bg-primary hover:bg-orange-600 text-white py-4 rounded-xl font-bold text-lg shadow-lg shadow-orange-500/30 active:scale-95 transition-transform">
-                                        Create Task
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    )}
-
+        <!-- SETTINGS -->
+        <div id="view-settings" class="view">
+            <div class="stat-card">
+                <h3 style="margin-top:0">Stats</h3>
+                <div style="display:flex; justify-content:space-around;">
+                    <div><div class="stat-num" id="sTotal">0</div><div class="stat-lbl">Total</div></div>
+                    <div><div class="stat-num" id="sDone">0</div><div class="stat-lbl">Done</div></div>
                 </div>
-            );
-        }
+            </div>
+            <button class="reset-btn" onclick="app.wipe()">Reset All Data</button>
+        </div>
+    </main>
 
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<App />);
-    </script>
-</body>
-</html>
+    <nav>
+        <button class="nav-item active" id="n1" onclick="app.nav('tasks', this)">
+            <svg><path d="M9 11l3 3L22 4"></path><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
+            Tasks
+        </button>
+        <button class="nav-item" id="n2" onclick="app.nav('cal', this)">
+            <svg><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+            Calendar
+        </button>
+        <button class="nav-item" id="n3" onclick="app.nav('timer', this)">
+            <svg><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+            Timer
+        </button>
+        <button class="nav-item" id="n4" onclick="app.nav('settings', this)">
+            <svg><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+            Settings
+        </button>
+    </nav>
+
+    <!-- MODAL -->
+    <div id="modal">
+        <div class="sheet">
+            <div style="display:flex; justify-content:space-between; margin-bottom:15px;">
+                <h2 style="margin:0">New Task</h2>
+                <div onclick="app.closeModal()" style="padding:5px;">✕</div>
+            </div>
+            
+            <input type="text" id="tInput" placeholder="What needs to be done?">
+            
+            <span class="form-label">DUE DATE</span>
+            <input type="date" id="dInput">
+            
+            <span class="form-label">CATEGORY</span>
+            <div class="chips" id="catRow"></div>
+            
+            <div class="opts">
+                <button class="opt-btn" id="btnStar" onclick="app.togOpt('star')">
+                    <svg style="width:16px; height:16px"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg> Star
+                </button>
+                <button class="opt-btn" id="btnFlag" onclick="app.togOpt('flag')">
+                    <svg style="width:16px; height:16px"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path><line x1="4" y1="22" x2="4" y2="15"></line></svg> Flag
+                </button>
+            </div>
+
+            <button class="save-btn" onclick="app.saveTask()">Save Task</button>
+        </div>
+    </div>
+
+    <script>
+        const app = {
+            data: [],
+            cats: ['Work', 'Personal', 'Health', 'Shop'],
+            temp: { cat:'Personal', star:false, flag:false },
+            timer: null,
+            time: 1500,
+            isRun: false,
+
+            init: function() {
+                try {
+                    const str = localStorage.getItem('mazi_final_v8');
+                    if(str) this.data = JSON.parse(str);
+                } catch(e) {}
+                
+                // Set default date to today
+                document.getElementById('dInput').value = new Date().toISOString().split('T')[0];
+                
+                this.render();
+                this.renderCal();
+                this.stats();
+            },
+
+            // NAV
+            nav: function(v, btn) {
+                document.querySelectorAll('.view').forEach(e => e.classList.remove('active'));
+                document.getElementById('view-'+v).classList.add('active');
+                
+                document.querySelectorAll('.nav-item').forEach(e => e.classList.remove('active'));
+                btn.classList.add('active');
+            },
+
+            // TASKS
+            render: function() {
+                const list = document.getElementById('taskList');
+                list.innerHTML = '';
+                
+                if(this.data.length === 0) {
+                    list.innerHTML = '<div style="text-align:center; padding-top:60px; color:#cbd5e1; font-weight:bold;">No tasks yet</div>';
+                    return;
+                }
+
+                this.data.forEach((t, i) => {
+                    let icons = '';
+                    if(t.star) icons += '<svg class="icon-star"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>';
+                    if(t.flag) icons += '<svg class="icon-flag"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path><line x1="4" y1="22" x2="4" y2="15"></line></svg>';
+                    
+                    const cls = t.done ? 'task-card done' : 'task-card';
+                    
+                    list.innerHTML += `
+                    <div class="${cls}" data-cat="${t.cat}">
+                        <div class="checkbox" onclick="app.toggle(${i})">
+                            <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                        </div>
+                        <div class="info">
+                            <div class="meta">
+                                <span style="margin-right:10px">${t.cat}</span>
+                                <span>${t.date || ''}</span>
+                            </div>
+                            <h3>${t.title}</h3>
+                            <div class="icons">${icons}</div>
+                        </div>
+                        <button class="del-btn" onclick="app.del(${i})">
+                            <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                        </button>
+                    </div>`;
+                });
+                this.stats();
+            },
+
+            saveTask: function() {
+                const title = document.getElementById('tInput').value;
+                const date = document.getElementById('dInput').value;
+                if(!title) return;
+
+                this.data.unshift({
+                    title: title,
+                    date: date,
+                    cat: this.temp.cat,
+                    star: this.temp.star,
+                    flag: this.temp.flag,
+                    done: false
+                });
+                this.save();
+                this.render();
+                this.renderCal();
+                this.closeModal();
+                
+                // Switch to tasks
+                this.nav('tasks', document.getElementById('n1'));
+                document.getElementById('tInput').value = '';
+            },
+
+            toggle: function(i) {
+                this.data[i].done = !this.data[i].done;
+                this.save();
+                this.render();
+                this.renderCal();
+            },
+
+            del: function(i) {
+                if(confirm('Delete?')) {
+                    this.data.splice(i, 1);
+                    this.save();
+                    this.render();
+                    this.renderCal();
+                }
+            },
+
+            // CALENDAR
+            renderCal: function() {
+                const grid = document.getElementById('calGrid');
+                let html = '';
+                const heads = ['S','M','T','W','T','F','S'];
+                heads.forEach(h => html += `<div class="day-head">${h}</div>`);
+
+                const today = new Date().getDate();
+                // Simple 30 day view
+                for(let i=1; i<=30; i++) {
+                    // Format i to YYYY-MM-DD based on current month/year for matching
+                    // Simplified logic: Check if any task has 'date' ending in this day number
+                    // Better logic: Match full string. 
+                    // For this version, we'll check day number match if month matches
+                    
+                    const now = new Date();
+                    const checkDate = new Date(now.getFullYear(), now.getMonth(), i).toISOString().split('T')[0];
+                    
+                    let has = this.data.some(t => t.date === checkDate && !t.done);
+                    
+                    let cls = 'day';
+                    if(i === today) cls += ' today';
+                    if(has) cls += ' has-task';
+                    
+                    html += `<div class="${cls}">${i}<div class="dot"></
