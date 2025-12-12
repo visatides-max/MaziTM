@@ -9,12 +9,17 @@
         * { -webkit-box-sizing: border-box; box-sizing: border-box; -webkit-tap-highlight-color: rgba(0,0,0,0); outline: none; }
         body { margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: #f8fafc; color: #1e293b; height: 100vh; display: flex; flex-direction: column; user-select: none; }
 
+        /* DARK MODE */
+        body.dark-mode { background-color: #0f172a; color: #f1f5f9; }
+        body.dark-mode #header, body.dark-mode #nav, body.dark-mode .sheet, body.dark-mode .task-card, body.dark-mode .day, body.dark-mode .stat-card, body.dark-mode .set-btn, body.dark-mode input, body.dark-mode select, body.dark-mode textarea { background-color: #1e293b; color: #f1f5f9; border-color: #334155; }
+        body.dark-mode .brand { color: #f1f5f9; }
+
         /* HEADER */
         #header { height: 60px; background: #ffffff; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: space-between; padding: 0 16px; position: fixed; top: 0; width: 100%; z-index: 50; }
-        .logo-sq { width: 32px; height: 32px; background: linear-gradient(135deg, #f97316, #ea580c); border-radius: 8px; color: white; display: flex; align-items: center; justify-content: center; font-weight: 900; }
+        .logo { width: 32px; height: 32px; background: linear-gradient(135deg, #f97316, #ea580c); border-radius: 8px; color: white; display: flex; align-items: center; justify-content: center; font-weight: 900; }
         .brand { font-size: 20px; font-weight: 800; margin-left: 10px; color: #333; display: flex; align-items: center; }
         .brand span { color: #0ea5e9; }
-        .add-btn { width: 38px; height: 38px; background: #0f172a; color: #fff; border-radius: 50%; border: none; font-size: 24px; box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
+        .add-btn { width: 36px; height: 36px; background: #0f172a; color: #fff; border-radius: 50%; border: none; font-size: 24px; box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
 
         /* MAIN */
         #main { flex: 1; padding: 75px 16px 80px 16px; overflow-y: auto; }
@@ -28,7 +33,8 @@
         .bar-Work { background: #3b82f6; } .bar-Personal { background: #f97316; } .bar-Health { background: #ef4444; } .bar-Shop { background: #10b981; }
         
         .task-card.priority { border: 1px solid #fca5a5; background: #fff1f2; }
-        
+        body.dark-mode .task-card.priority { background: #450a0a; border-color: #7f1d1d; }
+
         .chk { width: 24px; height: 24px; border: 2px solid #cbd5e1; border-radius: 6px; margin-left: 10px; display: flex; align-items: center; justify-content: center; }
         .task-card.done .chk { background: #0ea5e9; border-color: #0ea5e9; }
         .chk span { display: none; color: white; font-size: 14px; }
@@ -40,14 +46,15 @@
         .meta { font-size: 10px; font-weight: bold; color: #94a3b8; text-transform: uppercase; margin-bottom: 4px; display: flex; gap: 5px; }
         h3 { margin: 0; font-size: 16px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .mini-btn { padding: 8px; font-size: 18px; color: #94a3b8; background: none; border: none; }
+        .streak { color: #f97316; font-weight: bold; }
 
         /* NOTES */
         .notes-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .note-card { padding: 15px; border-radius: 12px; height: 150px; overflow: hidden; position: relative; border: 1px solid rgba(0,0,0,0.05); color: #1e293b; background: white; }
         .note-card h4 { margin: 0 0 5px 0; font-size: 14px; font-weight: 800; }
         .note-card p { margin: 0; font-size: 12px; opacity: 0.8; }
-        .bg-yellow { background: #fef08a !important; } .bg-green { background: #bbf7d0 !important; } 
-        .bg-blue { background: #bae6fd !important; } .bg-pink { background: #fbcfe8 !important; }
+        .bg-yellow { background: #fef08a !important; color:#333; } .bg-green { background: #bbf7d0 !important; color:#333; } 
+        .bg-blue { background: #bae6fd !important; color:#333; } .bg-pink { background: #fbcfe8 !important; color:#333; }
 
         /* CALENDAR */
         .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; text-align: center; }
@@ -59,6 +66,7 @@
         /* TIMER */
         .timer-box { text-align: center; padding-top: 20px; }
         .time-display { font-size: 60px; font-weight: 900; color: #1e293b; margin: 20px 0; }
+        body.dark-mode .time-display { color: white; }
         .t-inp { width: 60px; padding: 10px; text-align: center; border: 1px solid #ccc; border-radius: 8px; background: white; }
         .btn-play { width: 60px; height: 60px; border-radius: 50%; background: #f97316; color: white; border: none; font-size: 20px; margin: 0 10px; }
         .btn-reset { width: 50px; height: 50px; border-radius: 50%; background: #e2e8f0; color: #666; border: none; font-size: 18px; }
@@ -84,7 +92,7 @@
         .cancel-btn { text-align: center; padding: 15px; color: #94a3b8; font-weight: bold; }
         
         .set-btn { width: 100%; padding: 15px; border: 1px solid #e2e8f0; border-radius: 12px; margin-top: 10px; background: #fff; font-weight: bold; text-align: left; display: flex; justify-content: space-between; color: #333; }
-        
+
         /* COLORS */
         .color-row { display: flex; gap: 10px; }
         .dot-btn { width: 30px; height: 30px; border-radius: 50%; border: 2px solid transparent; }
@@ -96,17 +104,21 @@
         .sub-done { background: #0ea5e9; border-color: #0ea5e9; }
         .com-item { background: #f1f5f9; padding: 10px; margin-bottom: 5px; border-radius: 5px; font-size: 14px; }
         
-        /* DARK MODE */
-        body.dark-mode { background-color: #0f172a; color: #f1f5f9; }
-        body.dark-mode #header, body.dark-mode #nav, body.dark-mode .sheet, body.dark-mode .task-card, body.dark-mode .day, body.dark-mode .stat-card, body.dark-mode .set-btn, body.dark-mode input, body.dark-mode select, body.dark-mode textarea { background-color: #1e293b; color: #f1f5f9; border-color: #334155; }
-        body.dark-mode .brand { color: white; }
+        /* TEXT */
+        .text-content p { font-size: 14px; line-height: 1.6; margin-bottom: 15px; }
+        .text-content h3 { color: #f97316; margin-top: 20px; }
+        body.dark-mode .text-content p { color: #ccc; }
+
+        /* STATS */
+        .stat-card { background: #fff; padding: 20px; border-radius: 12px; border: 1px solid #e2e8f0; text-align: center; }
+        .stat-val { font-size: 32px; font-weight: 900; color: #f97316; margin: 0; }
     </style>
 </head>
 <body>
 
     <div id="header">
         <div class="brand">
-            <div class="logo-sq">T</div>
+            <div class="logo">T</div>
             <div style="margin-left:8px;">Task<span>lite</span></div>
         </div>
         <button class="add-btn" onclick="openAddModal()">+</button>
@@ -144,27 +156,30 @@
         </div>
         <!-- SETTINGS -->
         <div id="view-settings" class="view">
-            <div class="stat-card" style="background:white; padding:20px; border-radius:12px; border:1px solid #e2e8f0; text-align:center;">
+            <div class="stat-card">
                 <h3>Stats</h3>
                 <div style="display:flex; justify-content:space-around;">
-                    <div><h1 style="margin:0; color:#f97316" id="sTotal">0</h1><small>Total</small></div>
-                    <div><h1 style="margin:0; color:#f97316" id="sDone">0</h1><small>Done</small></div>
+                    <div><h1 class="stat-val" id="sTotal">0</h1><small>Total</small></div>
+                    <div><h1 class="stat-val" id="sDone">0</h1><small>Done</small></div>
                 </div>
             </div>
             <br>
             <button class="set-btn" onclick="reqNotif()">Enable Notifications <span>🔔</span></button>
             <button class="set-btn" onclick="toggleTheme()">Dark Mode <span id="themeTxt">OFF</span></button>
+            
             <button class="set-btn" onclick="toggleBackup()">Backup / Restore</button>
-            <div id="backupBox" style="display:none; margin-top:10px">
-                <textarea id="backupText" style="height:80px; font-size:10px;" placeholder="Copy/Paste Data Here"></textarea>
+            <div id="backupBox" class="backup-area" style="display:none; margin-top:10px">
+                <textarea id="backupText" style="width:100%; height:80px; font-size:10px;" placeholder="Copy/Paste Data"></textarea>
                 <div style="display:flex; gap:10px; margin-top:5px;">
                     <button onclick="exportData()" style="flex:1; padding:10px; background:#f97316; color:white; border:none; border-radius:8px;">Copy</button>
                     <button onclick="importData()" style="flex:1; padding:10px; background:#333; color:white; border:none; border-radius:8px;">Restore</button>
                 </div>
             </div>
+
             <button class="set-btn" onclick="openPrivacy()">Privacy Policy</button>
             <button class="set-btn" onclick="openAbout()">About Tasklite</button>
-            <button class="set-btn" style="color:red; border-color:#fee2e2; background:#fff5f5" onclick="wipeData()">Reset All Data</button>
+            
+            <button class="set-btn" style="color:red; border-color:#fee2e2; background:#fff5f5" onclick="openResetModal()">Reset All Data</button>
         </div>
     </div>
 
@@ -224,8 +239,8 @@
                 <button onclick="showSub()" style="flex:1; padding:8px; border:1px solid #ccc; background:var(--surface); color:var(--text); border-radius:8px">Checklist</button>
                 <button onclick="showCom()" style="flex:1; padding:8px; border:1px solid #ccc; background:var(--surface); color:var(--text); border-radius:8px">Comments</button>
             </div>
-            <div id="detContent" style="flex:1; overflow-y:auto; border:1px solid #e2e8f0; border-radius:10px; padding:10px;"></div>
-            <div style="display:flex; gap:5px; margin-top:10px">
+            <div id="detList" style="margin-bottom:15px; border:1px solid #eee; padding:10px; border-radius:8px;"></div>
+            <div style="display:flex; gap:5px">
                 <input type="text" id="detInput" placeholder="Add item...">
                 <button onclick="addDetailItem()" style="background:#f97316; color:white; border:none; border-radius:8px; padding:0 15px;">+</button>
             </div>
@@ -238,7 +253,7 @@
     <div id="infoModal" class="modal">
         <div class="sheet">
             <h2 id="infoTitle">Info</h2>
-            <div id="infoBody" style="font-size:14px; line-height:1.6; color:#555"></div>
+            <div id="infoBody" class="text-content"></div>
             <button class="save-btn" onclick="closeModal('infoModal')">Close</button>
             <div style="height:50px"></div>
         </div>
@@ -250,7 +265,7 @@
             <h2 style="color:#ef4444">Warning</h2>
             <p>Are you sure you want to delete everything? This cannot be undone.</p>
             <div style="display:flex; gap:10px">
-                <button class="save-btn" style="background:#ef4444; flex:1" id="btnConfirmYes">Yes</button>
+                <button class="save-btn" style="background:#ef4444; flex:1" onclick="doWipe()">Yes</button>
                 <button class="save-btn" style="background:#ccc; color:#333; flex:1" onclick="closeModal('resetModal')">No</button>
             </div>
         </div>
@@ -281,7 +296,6 @@
         var time = 1500;
         var isRun = false;
         var currentView = 'tasks';
-        var confirmCallback = null;
 
         window.onload = function() {
             try {
@@ -295,48 +309,5 @@
                 if(th === 'dark') toggleTheme();
             } catch(e) {}
             
-            document.getElementById('inpDate').value = new Date().toISOString().split('T')[0];
-            renderAll();
-            setInterval(checkAlarm, 30000);
-        };
-
-        function nav(v, btn) {
-            currentView = v;
-            var vs = document.querySelectorAll('.view');
-            for(var i=0; i<vs.length; i++) vs[i].style.display = 'none';
-            document.getElementById('view-'+v).style.display = 'block';
-            
-            var ns = document.querySelectorAll('.nav-item');
-            for(var j=0; j<ns.length; j++) ns[j].style.color = '#94a3b8';
-            btn.style.color = '#f97316';
-        }
-
-        function openAddModal() {
-            if(currentView === 'notes') {
-                document.getElementById('noteModal').style.display = 'flex';
-            } else {
-                document.getElementById('taskModal').style.display = 'flex';
-                renderCats();
-            }
-        }
-        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
-
-        /* --- TASKS --- */
-        function renderCats() {
-            var d = document.getElementById('catRow'); d.innerHTML = '';
-            for(var i=0; i<cats.length; i++) {
-                var c = cats[i];
-                var cls = (tempCat === c) ? 'chip selected' : 'chip';
-                d.innerHTML += '<div class="'+cls+'" onclick="setCat(\''+c+'\')">'+c+'</div>';
-            }
-        }
-        function setCat(c) { tempCat = c; renderCats(); }
-        function saveTask() {
-            var t = document.getElementById('inpTitle').value;
-            if(!t) return;
-            tasks.unshift({
-                id: new Date().getTime(), title: t,
-                date: document.getElementById('inpDate').value,
-                time: document.getElementById('inpTime').value,
-                cat: tempCat, prio: document.getElementById('inpPrio').value,
-               
+            document.getElementById('inpDate').value = new Date().toISOString
+        
