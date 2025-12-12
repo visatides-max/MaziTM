@@ -1,381 +1,342 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Tasklite</title>
     <style>
-        /* --- THEME VARIABLES --- */
-        :root {
-            --primary: #f97316;
-            --primary-light: #fff7ed;
-            --accent: #0ea5e9;
-            --bg: #f8fafc;
-            --surface: #ffffff;
-            --text: #1e293b;
-            --text-soft: #94a3b8;
-            --border: #e2e8f0;
-            --danger: #ef4444;
-        }
-
-        [data-theme="dark"] {
-            --bg: #0f172a;
-            --surface: #1e293b;
-            --text: #f1f5f9;
-            --text-soft: #64748b;
-            --border: #334155;
-            --primary-light: #331800;
-        }
-        
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
-        
-        body {
-            margin: 0; padding: 0;
-            font-family: sans-serif;
-            background-color: var(--bg); color: var(--text);
-            height: 100vh; display: flex; flex-direction: column;
-            user-select: none; transition: background 0.3s;
-        }
+        /* --- PREMIUM CSS --- */
+        * { -webkit-box-sizing: border-box; box-sizing: border-box; -webkit-tap-highlight-color: rgba(0,0,0,0); outline: none; }
+        body { margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: #f8fafc; color: #1e293b; height: 100vh; display: flex; flex-direction: column; user-select: none; }
 
         /* HEADER */
-        header {
-            height: 60px; background: var(--surface);
-            border-bottom: 1px solid var(--border);
-            display: flex; align-items: center; justify-content: space-between;
-            padding: 0 16px; position: fixed; top: 0; width: 100%; z-index: 50;
-        }
-        .brand { font-size: 20px; font-weight: 800; }
-        .brand span { color: var(--primary); }
-        .add-btn {
-            width: 36px; height: 36px; background: var(--text); color: var(--bg);
-            border-radius: 50%; border: none; font-size: 24px;
-            display: flex; align-items: center; justify-content: center;
-        }
+        #header { height: 60px; background: #ffffff; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: space-between; padding: 0 16px; position: fixed; top: 0; width: 100%; z-index: 50; }
+        .logo-sq { width: 32px; height: 32px; background: linear-gradient(135deg, #f97316, #ea580c); border-radius: 8px; color: white; display: flex; align-items: center; justify-content: center; font-weight: 900; }
+        .brand { font-size: 20px; font-weight: 800; margin-left: 10px; color: #333; display: flex; align-items: center; }
+        .brand span { color: #0ea5e9; }
+        .add-btn { width: 38px; height: 38px; background: #0f172a; color: #fff; border-radius: 50%; border: none; font-size: 24px; box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
 
         /* MAIN */
-        main { flex: 1; padding: 75px 16px 80px 16px; overflow-y: auto; }
+        #main { flex: 1; padding: 75px 16px 80px 16px; overflow-y: auto; }
         .view { display: none; }
         .view.active { display: block; animation: fadeIn 0.3s; }
+        @keyframes fadeIn { from {opacity:0} to {opacity:1} }
 
         /* TASK CARD */
-        .task-card {
-            background: var(--surface); padding: 15px; border-radius: 12px;
-            margin-bottom: 12px; border: 1px solid var(--border);
-            position: relative; overflow: hidden; display: flex; align-items: center; gap: 10px;
-        }
-        .task-card::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 5px; background: var(--border); }
-        .task-card[data-cat="Work"]::before { background: #3b82f6; }
-        .task-card[data-cat="Personal"]::before { background: #f97316; }
-        .task-card[data-cat="Health"]::before { background: #ef4444; }
+        .task-card { background: #fff; padding: 15px; border-radius: 12px; margin-bottom: 12px; border: 1px solid #e2e8f0; position: relative; overflow: hidden; display: flex; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+        .bar { position: absolute; left: 0; top: 0; bottom: 0; width: 5px; background: #ccc; }
+        .bar-Work { background: #3b82f6; } .bar-Personal { background: #f97316; } .bar-Health { background: #ef4444; } .bar-Shop { background: #10b981; }
         
         .task-card.priority { border: 1px solid #fca5a5; background: #fff1f2; }
-        [data-theme="dark"] .task-card.priority { background: #450a0a; border-color: #7f1d1d; }
-
-        .checkbox {
-            width: 24px; height: 24px; border: 2px solid #cbd5e1; border-radius: 6px;
-            display: flex; align-items: center; justify-content: center; margin-left: 5px;
-        }
-        .task-card.done .checkbox { background: var(--accent); border-color: var(--accent); color: white; }
+        
+        .chk { width: 24px; height: 24px; border: 2px solid #cbd5e1; border-radius: 6px; margin-left: 10px; display: flex; align-items: center; justify-content: center; }
+        .task-card.done .chk { background: #0ea5e9; border-color: #0ea5e9; }
+        .chk span { display: none; color: white; font-size: 14px; }
+        .task-card.done .chk span { display: block; }
         .task-card.done { opacity: 0.6; }
-        .task-card.done h3 { text-decoration: line-through; }
+        .task-card.done h3 { text-decoration: line-through; color: #94a3b8; }
 
-        .info { flex: 1; overflow: hidden; }
-        .meta { font-size: 10px; font-weight: bold; color: var(--text-soft); text-transform: uppercase; display: flex; gap: 8px; }
-        h3 { margin: 2px 0; font-size: 16px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--text); }
-        .sub-meta { font-size: 11px; color: var(--text-soft); }
-        .streak { font-size: 11px; color: #f97316; font-weight: bold; display: flex; align-items: center; gap: 3px; }
-        .mini-btn { background: none; border: none; padding: 5px; font-size: 16px; color: var(--text-soft); }
+        .info { flex: 1; margin-left: 12px; overflow: hidden; }
+        .meta { font-size: 10px; font-weight: bold; color: #94a3b8; text-transform: uppercase; margin-bottom: 4px; display: flex; gap: 5px; }
+        h3 { margin: 0; font-size: 16px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .mini-btn { padding: 8px; font-size: 18px; color: #94a3b8; background: none; border: none; }
 
-        /* NOTES GRID */
+        /* NOTES */
         .notes-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .note-card {
-            padding: 15px; border-radius: 12px; height: 160px;
-            display: flex; flex-direction: column; overflow: hidden;
-            position: relative; box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-            border: 1px solid rgba(0,0,0,0.05); color: #1e293b;
-        }
+        .note-card { padding: 15px; border-radius: 12px; height: 150px; overflow: hidden; position: relative; border: 1px solid rgba(0,0,0,0.05); color: #1e293b; background: white; }
         .note-card h4 { margin: 0 0 5px 0; font-size: 14px; font-weight: 800; }
-        .note-card p { margin: 0; font-size: 12px; line-height: 1.4; opacity: 0.8; white-space: pre-wrap; }
-        .note-date { position: absolute; bottom: 10px; right: 10px; font-size: 10px; opacity: 0.6; font-weight: bold; }
-        
-        .bg-yellow { background: #fef08a; }
-        .bg-green { background: #bbf7d0; }
-        .bg-blue { background: #bae6fd; }
-        .bg-pink { background: #fbcfe8; }
-        .bg-white { background: var(--surface); border: 1px solid var(--border); }
-
-        /* TIMER */
-        .timer-box { text-align: center; padding-top: 20px; }
-        .time-display { font-size: 70px; font-weight: 900; color: var(--text); margin: 20px 0; cursor: pointer; }
-        .time-hint { font-size: 10px; color: var(--primary); text-transform: uppercase; font-weight: bold; }
-        .timer-input-group { display: flex; gap: 10px; justify-content: center; margin-bottom: 20px; }
-        .timer-input { width: 80px; text-align: center; padding: 10px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg); color: var(--text); font-weight: bold; }
-        .btn-circle {
-            width: 70px; height: 70px; border-radius: 50%; border: none;
-            display: inline-flex; align-items: center; justify-content: center;
-            margin: 0 10px; cursor: pointer; font-size: 24px; color: white;
-        }
-        .play { background: var(--primary); }
-        .reset { background: var(--border); color: var(--text-soft); width: 50px; height: 50px; font-size: 20px; }
-
-        /* NAV */
-        nav {
-            position: fixed; bottom: 0; width: 100%; height: 65px;
-            background: var(--surface); border-top: 1px solid var(--border);
-            display: flex; justify-content: space-around; align-items: center; z-index: 100;
-        }
-        .nav-item { border: none; background: none; display: flex; flex-direction: column; align-items: center; color: var(--text-soft); font-size: 9px; font-weight: 700; gap: 3px; }
-        .nav-item.active { color: var(--primary); }
-        .nav-icon { font-size: 20px; }
-
-        /* MODAL */
-        #modal, #detailModal, #noteModal, #textModal {
-            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.6); z-index: 200; display: none; align-items: flex-end;
-        }
-        .sheet { background: var(--surface); width: 100%; max-height: 90vh; padding: 20px; border-radius: 20px 20px 0 0; overflow-y: auto; animation: slideUp 0.3s; display: flex; flex-direction: column; padding-bottom: 40px; }
-        
-        .label { font-size: 11px; font-weight: bold; color: var(--text-soft); margin: 15px 0 5px 0; display: block; letter-spacing: 0.5px; }
-        input, select, textarea {
-            width: 100%; padding: 12px; font-size: 16px; border: 1px solid #ccc;
-            border-radius: 10px; background: var(--bg); color: var(--text);
-        }
-        .row { display: flex; gap: 10px; }
-        .col { flex: 1; }
-
-        .modal-actions { display: flex; gap: 10px; margin-top: 20px; }
-        .save-btn { flex: 2; padding: 15px; background: var(--text); color: var(--bg); border: none; border-radius: 12px; font-weight: bold; font-size: 16px; }
-        .cancel-btn { flex: 1; padding: 15px; background: var(--bg); color: var(--text-soft); border: 1px solid var(--border); border-radius: 12px; font-weight: bold; font-size: 16px; }
-
-        /* COLOR PICKER */
-        .color-row { display: flex; gap: 10px; margin-top: 10px; }
-        .color-dot { width: 30px; height: 30px; border-radius: 50%; border: 2px solid transparent; cursor: pointer; }
-        .color-dot.selected { border-color: #333; transform: scale(1.1); }
-
-        /* SETTINGS BUTTONS */
-        .setting-btn {
-            width: 100%; padding: 15px; border: 1px solid var(--border); border-radius: 12px;
-            margin-top: 10px; background: var(--surface); color: var(--text); font-weight: bold;
-            display: flex; justify-content: space-between; align-items: center;
-        }
-        .backup-area { background: var(--bg); padding: 10px; border-radius: 10px; margin-top: 10px; word-break: break-all; font-family: monospace; font-size: 10px; display: none; }
-
-        /* SUBTASKS */
-        .sub-item { display: flex; align-items: center; gap: 10px; padding: 10px; border-bottom: 1px solid var(--border); }
-        .sub-chk { width: 20px; height: 20px; border: 2px solid #ccc; border-radius: 4px; }
-        .sub-done { background: var(--accent); border-color: var(--accent); }
-        .com-item { background: var(--bg); padding: 10px; border-radius: 8px; margin-bottom: 8px; font-size: 14px; }
+        .note-card p { margin: 0; font-size: 12px; opacity: 0.8; }
+        .bg-yellow { background: #fef08a !important; } .bg-green { background: #bbf7d0 !important; } 
+        .bg-blue { background: #bae6fd !important; } .bg-pink { background: #fbcfe8 !important; }
 
         /* CALENDAR */
         .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; text-align: center; }
-        .day { aspect-ratio: 1; border: 1px solid var(--border); border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; position: relative; }
-        .day.today { background: var(--primary); color: white; }
-        .dot { width: 4px; height: 4px; background: var(--accent); border-radius: 50%; margin-top: 2px; display: none; }
+        .day { background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px 0; font-size: 12px; font-weight: bold; position: relative; }
+        .day.today { background: #f97316; color: white; }
+        .dot { width: 4px; height: 4px; background: #0ea5e9; border-radius: 50%; margin: 2px auto 0 auto; display: none; }
         .day.has .dot { display: block; }
 
-        /* TEXT CONTENT (About/Privacy) */
-        .text-content p { font-size: 14px; line-height: 1.6; color: var(--text); margin-bottom: 15px; }
-        .text-content h3 { color: var(--primary); margin-top: 20px; }
+        /* TIMER */
+        .timer-box { text-align: center; padding-top: 20px; }
+        .time-display { font-size: 60px; font-weight: 900; color: #1e293b; margin: 20px 0; }
+        .t-inp { width: 60px; padding: 10px; text-align: center; border: 1px solid #ccc; border-radius: 8px; background: white; }
+        .btn-play { width: 60px; height: 60px; border-radius: 50%; background: #f97316; color: white; border: none; font-size: 20px; margin: 0 10px; }
+        .btn-reset { width: 50px; height: 50px; border-radius: 50%; background: #e2e8f0; color: #666; border: none; font-size: 18px; }
 
-        @keyframes fadeIn { from {opacity:0} to {opacity:1} }
-        @keyframes slideUp { from {transform:translateY(100%)} to {transform:translateY(0)} }
+        /* NAV */
+        #nav { position: fixed; bottom: 0; width: 100%; height: 60px; background: #fff; border-top: 1px solid #e2e8f0; display: flex; justify-content: space-around; align-items: center; z-index: 100; }
+        .nav-item { border: none; background: none; color: #94a3b8; font-size: 10px; font-weight: bold; display: flex; flex-direction: column; align-items: center; }
+        .nav-item.active { color: #f97316; }
+        .nav-icon { font-size: 20px; margin-bottom: 2px; }
+
+        /* MODAL */
+        .modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 200; display: none; align-items: flex-end; }
+        .sheet { background: #fff; width: 100%; max-height: 90vh; padding: 20px; border-radius: 20px 20px 0 0; overflow-y: auto; }
+        
+        .label { font-size: 10px; font-weight: bold; color: #94a3b8; margin: 15px 0 5px 0; display: block; }
+        input, select, textarea { width: 100%; padding: 12px; font-size: 16px; border: 1px solid #ccc; border-radius: 8px; margin-bottom: 5px; background: #fff; color: #333; }
+        
+        .chips { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 5px; }
+        .chip { padding: 8px 15px; border: 1px solid #e2e8f0; border-radius: 20px; font-size: 12px; font-weight: bold; white-space: nowrap; color: #666; }
+        .chip.selected { background: #f97316; color: white; border-color: #f97316; }
+        
+        .save-btn { width: 100%; padding: 15px; background: #1e293b; color: white; border: none; border-radius: 12px; font-weight: bold; font-size: 16px; margin-top: 20px; }
+        .cancel-btn { text-align: center; padding: 15px; color: #94a3b8; font-weight: bold; }
+        
+        .set-btn { width: 100%; padding: 15px; border: 1px solid #e2e8f0; border-radius: 12px; margin-top: 10px; background: #fff; font-weight: bold; text-align: left; display: flex; justify-content: space-between; color: #333; }
+        
+        /* COLORS */
+        .color-row { display: flex; gap: 10px; }
+        .dot-btn { width: 30px; height: 30px; border-radius: 50%; border: 2px solid transparent; }
+        .dot-btn.selected { border-color: #333; transform: scale(1.1); }
+
+        /* SUBTASKS */
+        .sub-item { display: flex; align-items: center; padding: 10px; border-bottom: 1px solid #eee; }
+        .sub-chk { width: 20px; height: 20px; border: 2px solid #ccc; margin-right: 10px; }
+        .sub-done { background: #0ea5e9; border-color: #0ea5e9; }
+        .com-item { background: #f1f5f9; padding: 10px; margin-bottom: 5px; border-radius: 5px; font-size: 14px; }
+        
+        /* DARK MODE */
+        body.dark-mode { background-color: #0f172a; color: #f1f5f9; }
+        body.dark-mode #header, body.dark-mode #nav, body.dark-mode .sheet, body.dark-mode .task-card, body.dark-mode .day, body.dark-mode .stat-card, body.dark-mode .set-btn, body.dark-mode input, body.dark-mode select, body.dark-mode textarea { background-color: #1e293b; color: #f1f5f9; border-color: #334155; }
+        body.dark-mode .brand { color: white; }
     </style>
 </head>
 <body>
 
-    <header>
-        <div class="brand">Task<span>lite</span></div>
-        <button class="add-btn" onclick="app.handleAdd()">+</button>
-    </header>
+    <div id="header">
+        <div class="brand">
+            <div class="logo-sq">T</div>
+            <div style="margin-left:8px;">Task<span>lite</span></div>
+        </div>
+        <button class="add-btn" onclick="openAddModal()">+</button>
+    </div>
 
-    <main>
+    <div id="main">
         <!-- TASKS -->
         <div id="view-tasks" class="view active">
             <div id="taskList"></div>
         </div>
-
         <!-- NOTES -->
         <div id="view-notes" class="view">
-            <h2 style="margin-top:0; color:var(--text)">My Notes</h2>
+            <h2 style="margin-top:0">My Notes</h2>
             <div id="notesGrid" class="notes-grid"></div>
         </div>
-
         <!-- CALENDAR -->
         <div id="view-cal" class="view">
-            <h2 style="margin-top:0; color:var(--text)">This Month</h2>
+            <h2 style="margin-top:0">Calendar</h2>
             <div class="cal-grid" id="calGrid"></div>
         </div>
-
         <!-- TIMER -->
         <div id="view-timer" class="view">
             <div class="timer-box">
-                <div style="font-weight:bold; color:var(--text-soft)">FOCUS MODE</div>
+                <div style="font-weight:bold; color:#94a3b8">FOCUS TIMER</div>
                 <div class="time-display" id="timerDisplay">25:00</div>
-                <div class="timer-input-group">
-                    <input type="number" id="customTime" class="timer-input" placeholder="Min">
-                    <button onclick="app.setCustomTime()" style="padding:10px; background:var(--primary); color:white; border:none; border-radius:8px;">Set</button>
-                </div>
                 <div>
-                    <button class="btn-circle play" onclick="app.toggleTimer()" id="playBtn">▶</button>
-                    <button class="btn-circle reset" onclick="app.resetTimer()">↺</button>
+                    <input type="number" id="tH" class="t-inp" placeholder="Hr">
+                    <input type="number" id="tM" class="t-inp" placeholder="Min">
+                    <button onclick="setCustomTime()" style="padding:10px; background:#f97316; color:white; border:none; border-radius:8px;">SET</button>
                 </div>
+                <br>
+                <button class="btn-play" onclick="toggleTimer()" id="playBtn">▶</button>
+                <button class="btn-reset" onclick="resetTimer()">↺</button>
             </div>
         </div>
-
         <!-- SETTINGS -->
         <div id="view-settings" class="view">
-            <div style="background:var(--surface); padding:20px; border-radius:15px; border:1px solid var(--border); text-align:center;">
+            <div class="stat-card" style="background:white; padding:20px; border-radius:12px; border:1px solid #e2e8f0; text-align:center;">
                 <h3>Stats</h3>
                 <div style="display:flex; justify-content:space-around;">
-                    <div><h1 style="color:var(--primary); margin:0;" id="sTotal">0</h1><small style="color:var(--text-soft)">Total</small></div>
-                    <div><h1 style="color:var(--primary); margin:0;" id="sDone">0</h1><small style="color:var(--text-soft)">Done</small></div>
+                    <div><h1 style="margin:0; color:#f97316" id="sTotal">0</h1><small>Total</small></div>
+                    <div><h1 style="margin:0; color:#f97316" id="sDone">0</h1><small>Done</small></div>
                 </div>
             </div>
             <br>
-            <button class="setting-btn" onclick="app.requestNotif()">
-                <span>🔔 Enable Notifications</span>
-            </button>
-            <button class="setting-btn" onclick="app.toggleTheme()">
-                <span>Dark Mode</span><span id="themeState">OFF</span>
-            </button>
-            <button class="setting-btn" onclick="app.toggleBackup()">
-                <span>Backup / Restore Data</span>
-            </button>
-            <div id="backupBox" class="backup-area">
-                <textarea id="backupText" style="width:100%; height:100px; margin-bottom:10px;" placeholder="Paste data here to restore..."></textarea>
-                <div style="display:flex; gap:10px;">
-                    <button onclick="app.exportData()" style="flex:1; padding:10px; background:var(--primary); color:white; border:none; border-radius:8px;">Copy</button>
-                    <button onclick="app.importData()" style="flex:1; padding:10px; background:var(--text); color:var(--bg); border:none; border-radius:8px;">Restore</button>
+            <button class="set-btn" onclick="reqNotif()">Enable Notifications <span>🔔</span></button>
+            <button class="set-btn" onclick="toggleTheme()">Dark Mode <span id="themeTxt">OFF</span></button>
+            <button class="set-btn" onclick="toggleBackup()">Backup / Restore</button>
+            <div id="backupBox" style="display:none; margin-top:10px">
+                <textarea id="backupText" style="height:80px; font-size:10px;" placeholder="Copy/Paste Data Here"></textarea>
+                <div style="display:flex; gap:10px; margin-top:5px;">
+                    <button onclick="exportData()" style="flex:1; padding:10px; background:#f97316; color:white; border:none; border-radius:8px;">Copy</button>
+                    <button onclick="importData()" style="flex:1; padding:10px; background:#333; color:white; border:none; border-radius:8px;">Restore</button>
                 </div>
             </div>
-            
-            <button class="setting-btn" onclick="app.openPrivacy()">
-                <span>Privacy Policy</span>
-            </button>
-            <button class="setting-btn" onclick="app.openAbout()">
-                <span>About Tasklite</span>
-            </button>
-
-            <button class="setting-btn" onclick="app.wipe()" style="color:#ef4444; border-color:#fee2e2; background:#fef2f2;">Reset All Data</button>
-        </div>
-    </main>
-
-    <nav>
-        <button class="nav-item active" id="n1" onclick="app.nav('tasks', this)"><div class="nav-icon">☑</div>Tasks</button>
-        <button class="nav-item" id="n2" onclick="app.nav('notes', this)"><div class="nav-icon">📝</div>Notes</button>
-        <button class="nav-item" id="n3" onclick="app.nav('cal', this)"><div class="nav-icon">📅</div>Cal</button>
-        <button class="nav-item" id="n4" onclick="app.nav('timer', this)"><div class="nav-icon">⏱</div>Timer</button>
-        <button class="nav-item" id="n5" onclick="app.nav('settings', this)"><div class="nav-icon">⚙</div>Set</button>
-    </nav>
-
-    <!-- NEW TASK MODAL -->
-    <div id="modal">
-        <div class="sheet">
-            <h2 style="margin:0; color:var(--text)">New Task</h2>
-            <span class="label">TITLE</span>
-            <input type="text" id="inpTitle" placeholder="E.g. Finish Report">
-            
-            <div class="row">
-                <div class="col"><span class="label">DATE</span><input type="date" id="inpDate"></div>
-                <div class="col"><span class="label">TIME (Reminder)</span><input type="time" id="inpTime"></div>
-            </div>
-
-            <div class="row">
-                <div class="col">
-                    <span class="label">CATEGORY</span>
-                    <select id="inpCat">
-                        <option>Work</option><option>Personal</option><option>Health</option><option>Shop</option>
-                    </select>
-                </div>
-                <div class="col">
-                    <span class="label">RECURRING</span>
-                    <select id="inpRecur">
-                        <option value="None">None</option><option value="Daily">Daily</option><option value="Weekly">Weekly</option>
-                    </select>
-                </div>
-            </div>
-            
-            <div class="row">
-                <div class="col">
-                    <span class="label">PRIORITY</span>
-                    <select id="inpPrio">
-                        <option value="Normal">Normal</option><option value="High">High 🔥</option>
-                    </select>
-                </div>
-            </div>
-
-            <span class="label">COLLABORATOR (Assignee Name)</span>
-            <input type="text" id="inpCollab" placeholder="Who is doing this?">
-
-            <div class="modal-actions">
-                <button class="cancel-btn" onclick="app.closeModal()">Cancel</button>
-                <button class="save-btn" style="margin:0" onclick="app.saveTask()">Create Task</button>
-            </div>
-            <div style="height: 50px;"></div>
+            <button class="set-btn" onclick="openPrivacy()">Privacy Policy</button>
+            <button class="set-btn" onclick="openAbout()">About Tasklite</button>
+            <button class="set-btn" style="color:red; border-color:#fee2e2; background:#fff5f5" onclick="wipeData()">Reset All Data</button>
         </div>
     </div>
 
-    <!-- NOTE MODAL -->
-    <div id="noteModal">
-        <div class="sheet">
-            <h2 style="margin:0; color:var(--text)">New Note</h2>
-            <input type="text" id="noteTitle" placeholder="Title">
-            <textarea id="noteBody" placeholder="Write something..." style="height:150px; margin-top:10px;"></textarea>
-            
-            <span class="label">COLOR</span>
-            <div class="color-row">
-                <div class="color-dot bg-yellow" onclick="app.setNoteColor('bg-yellow')" style="background:#fef08a"></div>
-                <div class="color-dot bg-green" onclick="app.setNoteColor('bg-green')" style="background:#bbf7d0"></div>
-                <div class="color-dot bg-blue" onclick="app.setNoteColor('bg-blue')" style="background:#bae6fd"></div>
-                <div class="color-dot bg-pink" onclick="app.setNoteColor('bg-pink')" style="background:#fbcfe8"></div>
-            </div>
-
-            <div class="modal-actions">
-                <button class="cancel-btn" onclick="document.getElementById('noteModal').style.display='none'">Cancel</button>
-                <button class="save-btn" style="margin:0" onclick="app.saveNote()">Save Note</button>
-            </div>
-            <div style="height: 50px;"></div>
-        </div>
+    <div id="nav">
+        <button class="nav-item active" id="n1" onclick="nav('tasks', this)"><div class="nav-icon">☑</div>Tasks</button>
+        <button class="nav-item" id="n2" onclick="nav('notes', this)"><div class="nav-icon">📝</div>Notes</button>
+        <button class="nav-item" id="n3" onclick="nav('cal', this)"><div class="nav-icon">📅</div>Cal</button>
+        <button class="nav-item" id="n4" onclick="nav('timer', this)"><div class="nav-icon">⏱</div>Timer</button>
+        <button class="nav-item" id="n5" onclick="nav('settings', this)"><div class="nav-icon">⚙</div>Set</button>
     </div>
 
-    <!-- DETAIL MODAL -->
-    <div id="detailModal">
+    <!-- TASK MODAL -->
+    <div id="taskModal" class="modal">
         <div class="sheet">
-            <h2 style="margin:0; color:var(--text)" id="detTitle">Task</h2>
-            <div style="margin-bottom:15px; display:flex; gap:10px; margin-top:10px;">
-                <button onclick="app.showSub()" style="flex:1; padding:8px; border-radius:8px; border:1px solid var(--border); background:var(--surface); color:var(--text);">Checklist</button>
-                <button onclick="app.showCom()" style="flex:1; padding:8px; border-radius:8px; border:1px solid var(--border); background:var(--surface); color:var(--text);">Comments</button>
+            <h2>New Task</h2>
+            <span class="label">TITLE</span><input type="text" id="inpTitle" placeholder="Task Name">
+            <div style="display:flex; gap:10px">
+                <div style="flex:1"><span class="label">DATE</span><input type="date" id="inpDate"></div>
+                <div style="flex:1"><span class="label">TIME</span><input type="time" id="inpTime"></div>
             </div>
-            <div id="detContent" style="flex:1; overflow-y:auto; border:1px solid var(--border); border-radius:10px; padding:10px;"></div>
-            
-            <div style="display:flex; gap:5px; margin-top:10px;">
-                <input type="text" id="detInput" placeholder="Add item...">
-                <button onclick="app.addDetailItem()" style="padding:0 15px; border-radius:10px; border:none; background:var(--primary); color:white;">+</button>
+            <span class="label">CATEGORY</span><div class="chips" id="catRow"></div>
+            <div style="display:flex; gap:10px">
+                <div style="flex:1"><span class="label">PRIORITY</span><select id="inpPrio"><option>Normal</option><option>High</option></select></div>
+                <div style="flex:1"><span class="label">REPEAT</span><select id="inpRecur"><option>None</option><option>Daily</option><option>Weekly</option></select></div>
             </div>
-            <div class="modal-actions">
-                <button class="cancel-btn" onclick="document.getElementById('detailModal').style.display='none'">Close</button>
-                <button class="save-btn" style="background:#ef4444; margin:0;" onclick="app.deleteCurrent()">Delete</button>
-            </div>
+            <span class="label">COLLABORATOR</span><input type="text" id="inpCollab" placeholder="Name">
+            <button class="save-btn" onclick="saveTask()">Save Task</button>
+            <div class="cancel-btn" onclick="closeModal('taskModal')">Cancel</div>
             <div style="height:50px"></div>
         </div>
     </div>
 
-    <!-- TEXT MODAL (Privacy/About) -->
-    <div id="textModal">
+    <!-- NOTE MODAL -->
+    <div id="noteModal" class="modal">
         <div class="sheet">
-            <h2 style="margin:0; color:var(--text)" id="txtTitle">Info</h2>
-            <div id="txtContent" class="text-content" style="flex:1; overflow-y:auto; margin-top:15px;"></div>
-            <div class="modal-actions">
-                <button class="cancel-btn" onclick="document.getElementById('textModal').style.display='none'" style="flex:1">Close</button>
+            <h2>New Note</h2>
+            <input type="text" id="noteTitle" placeholder="Title">
+            <textarea id="noteBody" style="height:100px" placeholder="Details..."></textarea>
+            <span class="label">COLOR</span>
+            <div class="color-row">
+                <div class="dot-btn bg-yellow" onclick="setNoteCol('bg-yellow')"></div>
+                <div class="dot-btn bg-green" onclick="setNoteCol('bg-green')"></div>
+                <div class="dot-btn bg-blue" onclick="setNoteCol('bg-blue')"></div>
+                <div class="dot-btn bg-pink" onclick="setNoteCol('bg-pink')"></div>
             </div>
-            <div style="height: 50px;"></div>
+            <button class="save-btn" onclick="saveNote()">Save Note</button>
+            <div class="cancel-btn" onclick="closeModal('noteModal')">Cancel</div>
+            <div style="height:50px"></div>
         </div>
     </div>
 
-    <!-- AUDIO FOR ALARM -->
-    <audio id="alarmSound" src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3"></audio>
+    <!-- DETAIL MODAL -->
+    <div id="detailModal" class="modal">
+        <div class="sheet">
+            <h2 id="detTitle">Task</h2>
+            <div style="display:flex; gap:10px; margin-bottom:10px">
+                <button onclick="showSub()" style="flex:1; padding:8px; border:1px solid #ccc; background:var(--surface); color:var(--text); border-radius:8px">Checklist</button>
+                <button onclick="showCom()" style="flex:1; padding:8px; border:1px solid #ccc; background:var(--surface); color:var(--text); border-radius:8px">Comments</button>
+            </div>
+            <div id="detContent" style="flex:1; overflow-y:auto; border:1px solid #e2e8f0; border-radius:10px; padding:10px;"></div>
+            <div style="display:flex; gap:5px; margin-top:10px">
+                <input type="text" id="detInput" placeholder="Add item...">
+                <button onclick="addDetailItem()" style="background:#f97316; color:white; border:none; border-radius:8px; padding:0 15px;">+</button>
+            </div>
+            <button class="save-btn" style="background:#ef4444; margin-top:10px" onclick="openResetModalForTask()">Delete Task</button>
+            <div class="cancel-btn" onclick="closeModal('detailModal')">Close</div>
+        </div>
+    </div>
+
+    <!-- INFO MODAL -->
+    <div id="infoModal" class="modal">
+        <div class="sheet">
+            <h2 id="infoTitle">Info</h2>
+            <div id="infoBody" style="font-size:14px; line-height:1.6; color:#555"></div>
+            <button class="save-btn" onclick="closeModal('infoModal')">Close</button>
+            <div style="height:50px"></div>
+        </div>
+    </div>
+
+    <!-- RESET CONFIRM MODAL -->
+    <div id="resetModal" class="modal">
+        <div class="sheet" style="height:auto">
+            <h2 style="color:#ef4444">Warning</h2>
+            <p>Are you sure you want to delete everything? This cannot be undone.</p>
+            <div style="display:flex; gap:10px">
+                <button class="save-btn" style="background:#ef4444; flex:1" id="btnConfirmYes">Yes</button>
+                <button class="save-btn" style="background:#ccc; color:#333; flex:1" onclick="closeModal('resetModal')">No</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="delTaskModal" class="modal">
+        <div class="sheet" style="height:auto">
+            <h2 style="color:#ef4444">Delete Task?</h2>
+            <div style="display:flex; gap:10px">
+                <button class="save-btn" style="background:#ef4444; flex:1" onclick="delTask()">Yes</button>
+                <button class="save-btn" style="background:#ccc; color:#333; flex:1" onclick="closeModal('delTaskModal')">No</button>
+            </div>
+        </div>
+    </div>
+
+    <audio id="alarm" src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3"></audio>
 
     <script>
-        var app = {
-            data: [],
-       
+        // --- SAFE JS LOGIC (ES5) ---
+        var tasks = [];
+        var notes = [];
+        var cats = ['Work', 'Personal', 'Health', 'Shop'];
+        var tempCat = 'Personal';
+        var tempNoteCol = 'bg-yellow';
+        var currId = null;
+        var detailMode = 'sub';
+        var timerId = null;
+        var time = 1500;
+        var isRun = false;
+        var currentView = 'tasks';
+        var confirmCallback = null;
+
+        window.onload = function() {
+            try {
+                var str = localStorage.getItem('tasklite_ult_github_v2');
+                if(str) {
+                    var d = JSON.parse(str);
+                    tasks = d.tasks || [];
+                    notes = d.notes || [];
+                }
+                var th = localStorage.getItem('tasklite_theme');
+                if(th === 'dark') toggleTheme();
+            } catch(e) {}
+            
+            document.getElementById('inpDate').value = new Date().toISOString().split('T')[0];
+            renderAll();
+            setInterval(checkAlarm, 30000);
+        };
+
+        function nav(v, btn) {
+            currentView = v;
+            var vs = document.querySelectorAll('.view');
+            for(var i=0; i<vs.length; i++) vs[i].style.display = 'none';
+            document.getElementById('view-'+v).style.display = 'block';
+            
+            var ns = document.querySelectorAll('.nav-item');
+            for(var j=0; j<ns.length; j++) ns[j].style.color = '#94a3b8';
+            btn.style.color = '#f97316';
+        }
+
+        function openAddModal() {
+            if(currentView === 'notes') {
+                document.getElementById('noteModal').style.display = 'flex';
+            } else {
+                document.getElementById('taskModal').style.display = 'flex';
+                renderCats();
+            }
+        }
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+
+        /* --- TASKS --- */
+        function renderCats() {
+            var d = document.getElementById('catRow'); d.innerHTML = '';
+            for(var i=0; i<cats.length; i++) {
+                var c = cats[i];
+                var cls = (tempCat === c) ? 'chip selected' : 'chip';
+                d.innerHTML += '<div class="'+cls+'" onclick="setCat(\''+c+'\')">'+c+'</div>';
+            }
+        }
+        function setCat(c) { tempCat = c; renderCats(); }
+        function saveTask() {
+            var t = document.getElementById('inpTitle').value;
+            if(!t) return;
+            tasks.unshift({
+                id: new Date().getTime(), title: t,
+                date: document.getElementById('inpDate').value,
+                time: document.getElementById('inpTime').value,
+                cat: tempCat, prio: document.getElementById('inpPrio').value,
+               
