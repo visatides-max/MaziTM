@@ -3,151 +3,179 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>MaziTM</title>
+    <title>Tasklite</title>
     <style>
-        /* --- PREMIUM CSS --- */
+        /* --- THEME VARIABLES --- */
         :root {
-            --primary: #f97316; /* Orange */
-            --accent: #0ea5e9; /* Sky Blue */
+            --primary: #f97316;
+            --primary-light: #fff7ed;
+            --accent: #0ea5e9;
             --bg: #f8fafc;
             --surface: #ffffff;
             --text: #1e293b;
-            --text-light: #94a3b8;
+            --text-soft: #94a3b8;
             --border: #e2e8f0;
+            --danger: #ef4444;
+        }
+
+        [data-theme="dark"] {
+            --bg: #0f172a;
+            --surface: #1e293b;
+            --text: #f1f5f9;
+            --text-soft: #64748b;
+            --border: #334155;
+            --primary-light: #331800;
         }
         
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
         
         body {
             margin: 0; padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            font-family: sans-serif;
             background-color: var(--bg); color: var(--text);
             height: 100vh; display: flex; flex-direction: column;
-            user-select: none;
+            user-select: none; transition: background 0.3s;
         }
-
-        /* ICONS */
-        .icon { width: 24px; height: 24px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 
         /* HEADER */
         header {
             height: 60px; background: var(--surface);
             border-bottom: 1px solid var(--border);
             display: flex; align-items: center; justify-content: space-between;
-            padding: 0 20px; position: fixed; top: 0; width: 100%; z-index: 100;
+            padding: 0 16px; position: fixed; top: 0; width: 100%; z-index: 50;
         }
-        .logo-box {
-            width: 32px; height: 32px;
-            background: linear-gradient(135deg, var(--primary), #ea580c);
-            border-radius: 8px; color: white;
-            display: flex; align-items: center; justify-content: center;
-            font-weight: 900; font-size: 18px;
-        }
-        .brand { font-size: 20px; font-weight: 800; margin-left: 10px; }
-        .brand span { color: var(--accent); font-weight: 300; }
-        
+        .brand { font-size: 20px; font-weight: 800; }
+        .brand span { color: var(--primary); }
         .add-btn {
-            width: 36px; height: 36px; background: #0f172a; color: white;
+            width: 36px; height: 36px; background: var(--text); color: var(--bg);
             border-radius: 50%; border: none; font-size: 24px;
             display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2); cursor: pointer;
         }
 
         /* MAIN */
-        main { flex: 1; padding: 80px 16px 80px 16px; overflow-y: auto; }
-        .view { display: none; animation: fadeIn 0.3s; }
-        .view.active { display: block; }
+        main { flex: 1; padding: 75px 16px 80px 16px; overflow-y: auto; }
+        .view { display: none; }
+        .view.active { display: block; animation: fadeIn 0.3s; }
 
-        /* TASK LIST */
+        /* TASK CARD */
         .task-card {
-            background: var(--surface); padding: 16px; border-radius: 12px;
-            margin-bottom: 10px; display: flex; align-items: center; gap: 12px;
-            border: 1px solid var(--border); box-shadow: 0 2px 4px rgba(0,0,0,0.02);
-            position: relative; overflow: hidden;
+            background: var(--surface); padding: 15px; border-radius: 12px;
+            margin-bottom: 12px; border: 1px solid var(--border);
+            position: relative; overflow: hidden; display: flex; align-items: center; gap: 10px;
         }
-        .bar { position: absolute; left: 0; top: 0; bottom: 0; width: 5px; background: #ccc; }
-        .bar.Work { background: #3b82f6; }
-        .bar.Personal { background: #f97316; }
-        .bar.Health { background: #ef4444; }
-        .bar.Shop { background: #10b981; }
+        .task-card::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 5px; background: var(--border); }
+        .task-card[data-cat="Work"]::before { background: #3b82f6; }
+        .task-card[data-cat="Personal"]::before { background: #f97316; }
+        .task-card[data-cat="Health"]::before { background: #ef4444; }
+        
+        .task-card.priority { border: 1px solid #fca5a5; background: #fff1f2; }
+        [data-theme="dark"] .task-card.priority { background: #450a0a; border-color: #7f1d1d; }
 
         .checkbox {
-            width: 22px; height: 22px; border: 2px solid #cbd5e1; border-radius: 6px;
-            display: flex; align-items: center; justify-content: center;
+            width: 24px; height: 24px; border: 2px solid #cbd5e1; border-radius: 6px;
+            display: flex; align-items: center; justify-content: center; margin-left: 5px;
         }
-        .task-card.done .checkbox { background: var(--accent); border-color: var(--accent); }
-        .checkbox svg { display: none; width: 14px; height: 14px; stroke: white; stroke-width: 3; }
-        .task-card.done .checkbox svg { display: block; }
-        
-        .task-card.done h3 { text-decoration: line-through; color: var(--text-light); }
+        .task-card.done .checkbox { background: var(--accent); border-color: var(--accent); color: white; }
         .task-card.done { opacity: 0.6; }
+        .task-card.done h3 { text-decoration: line-through; }
 
-        .info { flex: 1; }
-        .meta { display: flex; gap: 10px; font-size: 10px; font-weight: 800; color: var(--text-light); text-transform: uppercase; margin-bottom: 4px; }
-        h3 { margin: 0; font-size: 15px; font-weight: 700; }
-        
-        .del-btn { background: none; border: none; color: #cbd5e1; padding: 5px; font-size: 18px; }
+        .info { flex: 1; overflow: hidden; }
+        .meta { font-size: 10px; font-weight: bold; color: var(--text-soft); text-transform: uppercase; display: flex; gap: 8px; }
+        h3 { margin: 2px 0; font-size: 16px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--text); }
+        .sub-meta { font-size: 11px; color: var(--text-soft); }
+        .streak { font-size: 11px; color: #f97316; font-weight: bold; display: flex; align-items: center; gap: 3px; }
+        .mini-btn { background: none; border: none; padding: 5px; font-size: 16px; color: var(--text-soft); }
 
-        /* CALENDAR */
-        .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; text-align: center; }
-        .day-head { font-size: 10px; font-weight: bold; color: var(--text-light); margin-bottom: 5px; }
-        .day {
-            aspect-ratio: 1; background: white; border: 1px solid var(--border); border-radius: 8px;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            font-size: 13px; font-weight: bold; position: relative;
+        /* NOTES GRID */
+        .notes-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .note-card {
+            padding: 15px; border-radius: 12px; height: 160px;
+            display: flex; flex-direction: column; overflow: hidden;
+            position: relative; box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            border: 1px solid rgba(0,0,0,0.05); color: #1e293b;
         }
-        .day.today { background: var(--primary); color: white; border-color: var(--primary); }
-        .dot { width: 4px; height: 4px; background: var(--accent); border-radius: 50%; margin-top: 2px; display: none; }
-        .day.has-task .dot { display: block; }
-        .day.today .dot { background: white; }
+        .note-card h4 { margin: 0 0 5px 0; font-size: 14px; font-weight: 800; }
+        .note-card p { margin: 0; font-size: 12px; line-height: 1.4; opacity: 0.8; white-space: pre-wrap; }
+        .note-date { position: absolute; bottom: 10px; right: 10px; font-size: 10px; opacity: 0.6; font-weight: bold; }
+        
+        .bg-yellow { background: #fef08a; }
+        .bg-green { background: #bbf7d0; }
+        .bg-blue { background: #bae6fd; }
+        .bg-pink { background: #fbcfe8; }
+        .bg-white { background: var(--surface); border: 1px solid var(--border); }
 
         /* TIMER */
-        .timer-box { text-align: center; padding-top: 40px; }
-        .time-text { font-size: 64px; font-weight: 900; color: var(--text); margin: 20px 0; font-variant-numeric: tabular-nums; }
+        .timer-box { text-align: center; padding-top: 20px; }
+        .time-display { font-size: 70px; font-weight: 900; color: var(--text); margin: 20px 0; cursor: pointer; }
+        .time-hint { font-size: 10px; color: var(--primary); text-transform: uppercase; font-weight: bold; }
+        .timer-input-group { display: flex; gap: 10px; justify-content: center; margin-bottom: 20px; }
+        .timer-input { width: 80px; text-align: center; padding: 10px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg); color: var(--text); font-weight: bold; }
         .btn-circle {
-            width: 64px; height: 64px; border-radius: 50%; border: none;
+            width: 70px; height: 70px; border-radius: 50%; border: none;
             display: inline-flex; align-items: center; justify-content: center;
-            margin: 0 10px; cursor: pointer; color: white;
+            margin: 0 10px; cursor: pointer; font-size: 24px; color: white;
         }
-        .play { background: var(--primary); box-shadow: 0 8px 20px rgba(249, 115, 22, 0.4); }
-        .reset { background: #e2e8f0; color: #64748b; width: 50px; height: 50px; font-size: 20px; }
+        .play { background: var(--primary); }
+        .reset { background: var(--border); color: var(--text-soft); width: 50px; height: 50px; font-size: 20px; }
 
         /* NAV */
         nav {
-            position: fixed; bottom: 0; width: 100%; height: 60px;
+            position: fixed; bottom: 0; width: 100%; height: 65px;
             background: var(--surface); border-top: 1px solid var(--border);
             display: flex; justify-content: space-around; align-items: center; z-index: 100;
         }
-        .nav-item { border: none; background: none; display: flex; flex-direction: column; align-items: center; color: var(--text-light); font-size: 10px; font-weight: 700; gap: 3px; }
+        .nav-item { border: none; background: none; display: flex; flex-direction: column; align-items: center; color: var(--text-soft); font-size: 9px; font-weight: 700; gap: 3px; }
         .nav-item.active { color: var(--primary); }
+        .nav-icon { font-size: 20px; }
 
         /* MODAL */
-        #modal, #confirmModal {
+        #modal, #detailModal, #noteModal, #textModal {
             position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.5); z-index: 200; display: none; align-items: flex-end;
+            background: rgba(0,0,0,0.6); z-index: 200; display: none; align-items: flex-end;
         }
-        .sheet { background: white; width: 100%; padding: 20px; border-radius: 20px 20px 0 0; animation: slideUp 0.3s; }
-        .label { font-size: 10px; font-weight: bold; color: var(--text-light); margin: 15px 0 5px 0; display: block; }
-        input { width: 100%; padding: 12px; font-size: 16px; border: 1px solid #ccc; border-radius: 8px; }
+        .sheet { background: var(--surface); width: 100%; max-height: 90vh; padding: 20px; border-radius: 20px 20px 0 0; overflow-y: auto; animation: slideUp 0.3s; display: flex; flex-direction: column; padding-bottom: 40px; }
         
-        .chips { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 5px; }
-        .chip {
-            padding: 8px 12px; border: 1px solid var(--border); border-radius: 16px;
-            font-size: 12px; font-weight: bold; white-space: nowrap; color: var(--text-light);
+        .label { font-size: 11px; font-weight: bold; color: var(--text-soft); margin: 15px 0 5px 0; display: block; letter-spacing: 0.5px; }
+        input, select, textarea {
+            width: 100%; padding: 12px; font-size: 16px; border: 1px solid #ccc;
+            border-radius: 10px; background: var(--bg); color: var(--text);
         }
-        .chip.selected { background: var(--primary); color: white; border-color: var(--primary); }
-        
-        .save-btn { width: 100%; padding: 15px; background: #0f172a; color: white; border: none; border-radius: 12px; font-weight: bold; font-size: 16px; margin-top: 20px; }
-        
-        /* CONFIRM MODAL */
-        .confirm-btn { width: 100%; padding: 15px; margin-top: 10px; border-radius: 12px; font-weight: bold; border: none; font-size: 16px; }
-        .btn-yes { background: #ef4444; color: white; }
-        .btn-no { background: #e2e8f0; color: #64748b; }
+        .row { display: flex; gap: 10px; }
+        .col { flex: 1; }
 
-        /* STATS */
-        .stat-card { background: white; padding: 20px; border-radius: 20px; border: 1px solid var(--border); text-align: center; }
-        .stat-num { font-size: 32px; font-weight: 900; color: var(--primary); }
-        .stat-lbl { font-size: 10px; font-weight: 800; color: var(--text-light); text-transform: uppercase; }
+        .modal-actions { display: flex; gap: 10px; margin-top: 20px; }
+        .save-btn { flex: 2; padding: 15px; background: var(--text); color: var(--bg); border: none; border-radius: 12px; font-weight: bold; font-size: 16px; }
+        .cancel-btn { flex: 1; padding: 15px; background: var(--bg); color: var(--text-soft); border: 1px solid var(--border); border-radius: 12px; font-weight: bold; font-size: 16px; }
+
+        /* COLOR PICKER */
+        .color-row { display: flex; gap: 10px; margin-top: 10px; }
+        .color-dot { width: 30px; height: 30px; border-radius: 50%; border: 2px solid transparent; cursor: pointer; }
+        .color-dot.selected { border-color: #333; transform: scale(1.1); }
+
+        /* SETTINGS BUTTONS */
+        .setting-btn {
+            width: 100%; padding: 15px; border: 1px solid var(--border); border-radius: 12px;
+            margin-top: 10px; background: var(--surface); color: var(--text); font-weight: bold;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .backup-area { background: var(--bg); padding: 10px; border-radius: 10px; margin-top: 10px; word-break: break-all; font-family: monospace; font-size: 10px; display: none; }
+
+        /* SUBTASKS */
+        .sub-item { display: flex; align-items: center; gap: 10px; padding: 10px; border-bottom: 1px solid var(--border); }
+        .sub-chk { width: 20px; height: 20px; border: 2px solid #ccc; border-radius: 4px; }
+        .sub-done { background: var(--accent); border-color: var(--accent); }
+        .com-item { background: var(--bg); padding: 10px; border-radius: 8px; margin-bottom: 8px; font-size: 14px; }
+
+        /* CALENDAR */
+        .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; text-align: center; }
+        .day { aspect-ratio: 1; border: 1px solid var(--border); border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; position: relative; }
+        .day.today { background: var(--primary); color: white; }
+        .dot { width: 4px; height: 4px; background: var(--accent); border-radius: 50%; margin-top: 2px; display: none; }
+        .day.has .dot { display: block; }
+
+        /* TEXT CONTENT (About/Privacy) */
+        .text-content p { font-size: 14px; line-height: 1.6; color: var(--text); margin-bottom: 15px; }
+        .text-content h3 { color: var(--primary); margin-top: 20px; }
 
         @keyframes fadeIn { from {opacity:0} to {opacity:1} }
         @keyframes slideUp { from {transform:translateY(100%)} to {transform:translateY(0)} }
@@ -156,13 +184,8 @@
 <body>
 
     <header>
-        <div style="display:flex; align-items:center;">
-            <div class="logo-box">M</div>
-            <div class="brand">Mazi<span>TM</span></div>
-        </div>
-        <button class="add-btn" onclick="app.openModal()">
-            <svg class="icon" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"></path></svg>
-        </button>
+        <div class="brand">Task<span>lite</span></div>
+        <button class="add-btn" onclick="app.handleAdd()">+</button>
     </header>
 
     <main>
@@ -171,253 +194,188 @@
             <div id="taskList"></div>
         </div>
 
+        <!-- NOTES -->
+        <div id="view-notes" class="view">
+            <h2 style="margin-top:0; color:var(--text)">My Notes</h2>
+            <div id="notesGrid" class="notes-grid"></div>
+        </div>
+
         <!-- CALENDAR -->
         <div id="view-cal" class="view">
-            <h2 style="margin-top:0">This Month</h2>
+            <h2 style="margin-top:0; color:var(--text)">This Month</h2>
             <div class="cal-grid" id="calGrid"></div>
         </div>
 
         <!-- TIMER -->
         <div id="view-timer" class="view">
             <div class="timer-box">
-                <div style="font-size:12px; font-weight:bold; color:#94a3b8;">FOCUS TIMER</div>
-                <div class="time-text" id="timerDisplay">25:00</div>
-                <button class="btn-circle play" onclick="app.toggleTimer()" id="playBtn">▶</button>
-                <button class="btn-circle reset" onclick="app.resetTimer()">↺</button>
+                <div style="font-weight:bold; color:var(--text-soft)">FOCUS MODE</div>
+                <div class="time-display" id="timerDisplay">25:00</div>
+                <div class="timer-input-group">
+                    <input type="number" id="customTime" class="timer-input" placeholder="Min">
+                    <button onclick="app.setCustomTime()" style="padding:10px; background:var(--primary); color:white; border:none; border-radius:8px;">Set</button>
+                </div>
+                <div>
+                    <button class="btn-circle play" onclick="app.toggleTimer()" id="playBtn">▶</button>
+                    <button class="btn-circle reset" onclick="app.resetTimer()">↺</button>
+                </div>
             </div>
         </div>
 
         <!-- SETTINGS -->
         <div id="view-settings" class="view">
-            <div class="stat-card">
-                <h3 style="margin-top:0">Stats</h3>
+            <div style="background:var(--surface); padding:20px; border-radius:15px; border:1px solid var(--border); text-align:center;">
+                <h3>Stats</h3>
                 <div style="display:flex; justify-content:space-around;">
-                    <div><div class="stat-num" id="sTotal">0</div><div class="stat-lbl">Total</div></div>
-                    <div><div class="stat-num" id="sDone">0</div><div class="stat-lbl">Done</div></div>
+                    <div><h1 style="color:var(--primary); margin:0;" id="sTotal">0</h1><small style="color:var(--text-soft)">Total</small></div>
+                    <div><h1 style="color:var(--primary); margin:0;" id="sDone">0</h1><small style="color:var(--text-soft)">Done</small></div>
                 </div>
             </div>
-            <button class="save-btn" style="background:#ef4444" onclick="app.showConfirm()">Reset All Data</button>
+            <br>
+            <button class="setting-btn" onclick="app.requestNotif()">
+                <span>🔔 Enable Notifications</span>
+            </button>
+            <button class="setting-btn" onclick="app.toggleTheme()">
+                <span>Dark Mode</span><span id="themeState">OFF</span>
+            </button>
+            <button class="setting-btn" onclick="app.toggleBackup()">
+                <span>Backup / Restore Data</span>
+            </button>
+            <div id="backupBox" class="backup-area">
+                <textarea id="backupText" style="width:100%; height:100px; margin-bottom:10px;" placeholder="Paste data here to restore..."></textarea>
+                <div style="display:flex; gap:10px;">
+                    <button onclick="app.exportData()" style="flex:1; padding:10px; background:var(--primary); color:white; border:none; border-radius:8px;">Copy</button>
+                    <button onclick="app.importData()" style="flex:1; padding:10px; background:var(--text); color:var(--bg); border:none; border-radius:8px;">Restore</button>
+                </div>
+            </div>
+            
+            <button class="setting-btn" onclick="app.openPrivacy()">
+                <span>Privacy Policy</span>
+            </button>
+            <button class="setting-btn" onclick="app.openAbout()">
+                <span>About Tasklite</span>
+            </button>
+
+            <button class="setting-btn" onclick="app.wipe()" style="color:#ef4444; border-color:#fee2e2; background:#fef2f2;">Reset All Data</button>
         </div>
     </main>
 
     <nav>
-        <button class="nav-item active" id="n1" onclick="app.nav('tasks', this)">
-            <svg class="icon" viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"></path><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
-            Tasks
-        </button>
-        <button class="nav-item" id="n2" onclick="app.nav('cal', this)">
-            <svg class="icon" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-            Calendar
-        </button>
-        <button class="nav-item" id="n3" onclick="app.nav('timer', this)">
-            <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-            Timer
-        </button>
-        <button class="nav-item" id="n4" onclick="app.nav('settings', this)">
-            <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-            Settings
-        </button>
+        <button class="nav-item active" id="n1" onclick="app.nav('tasks', this)"><div class="nav-icon">☑</div>Tasks</button>
+        <button class="nav-item" id="n2" onclick="app.nav('notes', this)"><div class="nav-icon">📝</div>Notes</button>
+        <button class="nav-item" id="n3" onclick="app.nav('cal', this)"><div class="nav-icon">📅</div>Cal</button>
+        <button class="nav-item" id="n4" onclick="app.nav('timer', this)"><div class="nav-icon">⏱</div>Timer</button>
+        <button class="nav-item" id="n5" onclick="app.nav('settings', this)"><div class="nav-icon">⚙</div>Set</button>
     </nav>
 
     <!-- NEW TASK MODAL -->
     <div id="modal">
         <div class="sheet">
-            <h2 style="margin-top:0">New Task</h2>
-            <input type="text" id="tInput" placeholder="What needs to be done?">
+            <h2 style="margin:0; color:var(--text)">New Task</h2>
+            <span class="label">TITLE</span>
+            <input type="text" id="inpTitle" placeholder="E.g. Finish Report">
             
-            <span class="label">DUE DATE</span>
-            <input type="date" id="dInput">
-            
-            <span class="label">CATEGORY</span>
-            <div class="chips" id="catRow"></div>
-            
-            <div class="opts" style="display:flex; gap:10px; margin-top:20px;">
-                <button id="btnStar" onclick="app.togOpt('star')" style="flex:1; padding:10px; border-radius:10px; border:1px solid #ccc; background:white;">★ Star</button>
-                <button id="btnFlag" onclick="app.togOpt('flag')" style="flex:1; padding:10px; border-radius:10px; border:1px solid #ccc; background:white;">⚑ Flag</button>
+            <div class="row">
+                <div class="col"><span class="label">DATE</span><input type="date" id="inpDate"></div>
+                <div class="col"><span class="label">TIME (Reminder)</span><input type="time" id="inpTime"></div>
             </div>
 
-            <button class="save-btn" onclick="app.saveTask()">Create Task</button>
-            <div style="text-align:center; padding:15px; color:#94a3b8;" onclick="app.closeModal()">Cancel</div>
+            <div class="row">
+                <div class="col">
+                    <span class="label">CATEGORY</span>
+                    <select id="inpCat">
+                        <option>Work</option><option>Personal</option><option>Health</option><option>Shop</option>
+                    </select>
+                </div>
+                <div class="col">
+                    <span class="label">RECURRING</span>
+                    <select id="inpRecur">
+                        <option value="None">None</option><option value="Daily">Daily</option><option value="Weekly">Weekly</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col">
+                    <span class="label">PRIORITY</span>
+                    <select id="inpPrio">
+                        <option value="Normal">Normal</option><option value="High">High 🔥</option>
+                    </select>
+                </div>
+            </div>
+
+            <span class="label">COLLABORATOR (Assignee Name)</span>
+            <input type="text" id="inpCollab" placeholder="Who is doing this?">
+
+            <div class="modal-actions">
+                <button class="cancel-btn" onclick="app.closeModal()">Cancel</button>
+                <button class="save-btn" style="margin:0" onclick="app.saveTask()">Create Task</button>
+            </div>
+            <div style="height: 50px;"></div>
         </div>
     </div>
 
-    <!-- CONFIRM RESET MODAL (Safe for Android) -->
-    <div id="confirmModal">
+    <!-- NOTE MODAL -->
+    <div id="noteModal">
         <div class="sheet">
-            <h2 style="margin-top:0; color:#ef4444;">Warning</h2>
-            <p>Are you sure you want to delete all tasks? This cannot be undone.</p>
-            <button class="confirm-btn btn-yes" onclick="app.wipe()">Yes, Delete Everything</button>
-            <button class="confirm-btn btn-no" onclick="app.hideConfirm()">Cancel</button>
+            <h2 style="margin:0; color:var(--text)">New Note</h2>
+            <input type="text" id="noteTitle" placeholder="Title">
+            <textarea id="noteBody" placeholder="Write something..." style="height:150px; margin-top:10px;"></textarea>
+            
+            <span class="label">COLOR</span>
+            <div class="color-row">
+                <div class="color-dot bg-yellow" onclick="app.setNoteColor('bg-yellow')" style="background:#fef08a"></div>
+                <div class="color-dot bg-green" onclick="app.setNoteColor('bg-green')" style="background:#bbf7d0"></div>
+                <div class="color-dot bg-blue" onclick="app.setNoteColor('bg-blue')" style="background:#bae6fd"></div>
+                <div class="color-dot bg-pink" onclick="app.setNoteColor('bg-pink')" style="background:#fbcfe8"></div>
+            </div>
+
+            <div class="modal-actions">
+                <button class="cancel-btn" onclick="document.getElementById('noteModal').style.display='none'">Cancel</button>
+                <button class="save-btn" style="margin:0" onclick="app.saveNote()">Save Note</button>
+            </div>
+            <div style="height: 50px;"></div>
         </div>
     </div>
+
+    <!-- DETAIL MODAL -->
+    <div id="detailModal">
+        <div class="sheet">
+            <h2 style="margin:0; color:var(--text)" id="detTitle">Task</h2>
+            <div style="margin-bottom:15px; display:flex; gap:10px; margin-top:10px;">
+                <button onclick="app.showSub()" style="flex:1; padding:8px; border-radius:8px; border:1px solid var(--border); background:var(--surface); color:var(--text);">Checklist</button>
+                <button onclick="app.showCom()" style="flex:1; padding:8px; border-radius:8px; border:1px solid var(--border); background:var(--surface); color:var(--text);">Comments</button>
+            </div>
+            <div id="detContent" style="flex:1; overflow-y:auto; border:1px solid var(--border); border-radius:10px; padding:10px;"></div>
+            
+            <div style="display:flex; gap:5px; margin-top:10px;">
+                <input type="text" id="detInput" placeholder="Add item...">
+                <button onclick="app.addDetailItem()" style="padding:0 15px; border-radius:10px; border:none; background:var(--primary); color:white;">+</button>
+            </div>
+            <div class="modal-actions">
+                <button class="cancel-btn" onclick="document.getElementById('detailModal').style.display='none'">Close</button>
+                <button class="save-btn" style="background:#ef4444; margin:0;" onclick="app.deleteCurrent()">Delete</button>
+            </div>
+            <div style="height:50px"></div>
+        </div>
+    </div>
+
+    <!-- TEXT MODAL (Privacy/About) -->
+    <div id="textModal">
+        <div class="sheet">
+            <h2 style="margin:0; color:var(--text)" id="txtTitle">Info</h2>
+            <div id="txtContent" class="text-content" style="flex:1; overflow-y:auto; margin-top:15px;"></div>
+            <div class="modal-actions">
+                <button class="cancel-btn" onclick="document.getElementById('textModal').style.display='none'" style="flex:1">Close</button>
+            </div>
+            <div style="height: 50px;"></div>
+        </div>
+    </div>
+
+    <!-- AUDIO FOR ALARM -->
+    <audio id="alarmSound" src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3"></audio>
 
     <script>
         var app = {
             data: [],
-            cats: ['Work', 'Personal', 'Health', 'Shop'],
-            temp: { cat:'Personal', star:false, flag:false },
-            timer: null,
-            time: 1500,
-            isRun: false,
-
-            init: function() {
-                try {
-                    var str = localStorage.getItem('mazi_final_v10');
-                    if(str) this.data = JSON.parse(str);
-                } catch(e) {}
-                
-                // Set default date to today
-                var today = new Date().toISOString().split('T')[0];
-                document.getElementById('dInput').value = today;
-                
-                this.render();
-                this.renderCal();
-                this.stats();
-            },
-
-            // NAV
-            nav: function(v, btn) {
-                var views = document.querySelectorAll('.view');
-                for(var i=0; i<views.length; i++) views[i].style.display = 'none';
-                document.getElementById('view-'+v).style.display = 'block';
-                
-                var navs = document.querySelectorAll('.nav-item');
-                for(var j=0; j<navs.length; j++) navs[j].style.color = '#94a3b8';
-                btn.style.color = '#f97316';
-            },
-
-            // TASKS
-            render: function() {
-                var list = document.getElementById('taskList');
-                list.innerHTML = '';
-                
-                if(this.data.length === 0) {
-                    list.innerHTML = '<div style="text-align:center; padding-top:60px; color:#cbd5e1; font-weight:bold;">No tasks yet</div>';
-                    return;
-                }
-
-                for(var i=0; i<this.data.length; i++) {
-                    var t = this.data[i];
-                    var cls = t.done ? 'task-card done' : 'task-card';
-                    
-                    var icons = '';
-                    if(t.star) icons += '<svg class="icon-sm icon-star" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg> ';
-                    if(t.flag) icons += '<svg class="icon-sm icon-flag" viewBox="0 0 24 24"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path><line x1="4" y1="22" x2="4" y2="15"></line></svg>';
-
-                    var html = `
-                    <div class="${cls}">
-                        <div class="bar ${t.cat}"></div>
-                        <div class="checkbox" onclick="app.toggle(${i})">
-                            <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                        </div>
-                        <div class="info">
-                            <div class="meta">
-                                <span style="margin-right:10px">${t.cat}</span>
-                                <span>${t.date || ''}</span>
-                            </div>
-                            <h3>${t.title}</h3>
-                            <div class="icons" style="font-size:12px; color:#f59e0b; margin-top:2px;">${icons}</div>
-                        </div>
-                        <button class="del-btn" onclick="app.del(${i})">✕</button>
-                    </div>`;
-                    list.innerHTML += html;
-                }
-                this.stats();
-            },
-
-            saveTask: function() {
-                var title = document.getElementById('tInput').value;
-                var date = document.getElementById('dInput').value;
-                if(!title) return; // Silent return, no alert needed
-
-                this.data.unshift({
-                    title: title,
-                    date: date,
-                    cat: this.temp.cat,
-                    star: this.temp.star,
-                    flag: this.temp.flag,
-                    done: false
-                });
-                this.save();
-                this.render();
-                this.renderCal();
-                this.closeModal();
-                
-                document.getElementById('tInput').value = '';
-                this.nav('tasks', document.getElementById('n1'));
-            },
-
-            toggle: function(i) {
-                this.data[i].done = !this.data[i].done;
-                this.save();
-                this.render();
-                this.renderCal();
-            },
-
-            del: function(i) {
-                // Direct delete, no confirm popup to avoid freezing
-                this.data.splice(i, 1);
-                this.save();
-                this.render();
-                this.renderCal();
-            },
-
-            // CALENDAR
-            renderCal: function() {
-                var grid = document.getElementById('calGrid');
-                grid.innerHTML = '';
-                var heads = ['S','M','T','W','T','F','S'];
-                for(var h=0; h<7; h++) {
-                    grid.innerHTML += `<div class="day-head">${heads[h]}</div>`;
-                }
-
-                var now = new Date();
-                var today = now.getDate();
-                
-                for(var i=1; i<=30; i++) {
-                    var dayStr = (i<10) ? '0'+i : i;
-                    var has = false;
-                    for(var t=0; t<this.data.length; t++) {
-                        if(this.data[t].date && this.data[t].date.endsWith('-'+dayStr) && !this.data[t].done) has = true;
-                    }
-                    
-                    var cls = 'day';
-                    if(i == today) cls += ' today';
-                    if(has) cls += ' has-task';
-                    
-                    grid.innerHTML += `<div class="${cls}">${i}<div class="dot"></div></div>`;
-                }
-            },
-
-            // TIMER
-            toggleTimer: function() {
-                var btn = document.getElementById('playBtn');
-                if(this.isRun) {
-                    clearInterval(this.timer);
-                    this.isRun = false;
-                    btn.innerText = '▶';
-                } else {
-                    this.isRun = true;
-                    btn.innerText = 'II';
-                    this.timer = setInterval(function() {
-                        app.time--;
-                        if(app.time <= 0) {
-                            clearInterval(app.timer);
-                            app.isRun = false;
-                            app.time = 1500;
-                            btn.innerText = '▶';
-                        }
-                        app.updateTime();
-                    }, 1000);
-                }
-            },
-            resetTimer: function() {
-                clearInterval(this.timer);
-                this.isRun = false;
-                this.time = 1500;
-                document.getElementById('playBtn').innerText = '▶';
-                this.updateTime();
-            },
-            updateTime: function() {
-                var m = Math.floor(this.time / 60);
-                var s = this.time 
+       
