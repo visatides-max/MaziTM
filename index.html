@@ -5,14 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Tasklite</title>
     <style>
-        /* --- PREMIUM CSS (Fixed) --- */
+        /* --- PREMIUM CSS --- */
         * { -webkit-box-sizing: border-box; box-sizing: border-box; -webkit-tap-highlight-color: rgba(0,0,0,0); outline: none; }
-        body { margin: 0; padding: 0; font-family: sans-serif; background-color: #f8fafc; color: #1e293b; height: 100vh; display: flex; flex-direction: column; user-select: none; transition: background 0.3s; }
-
-        /* DARK MODE */
-        body.dark-mode { background-color: #0f172a; color: #f1f5f9; }
-        body.dark-mode #header, body.dark-mode #nav, body.dark-mode .sheet, body.dark-mode .task-card, body.dark-mode .day, body.dark-mode .stat-card, body.dark-mode .set-btn, body.dark-mode input, body.dark-body .select, body.dark-mode textarea { background-color: #1e293b; color: #f1f5f9; border-color: #334155; }
-        body.dark-mode .brand { color: white; }
+        body { margin: 0; padding: 0; font-family: sans-serif; background-color: #f8fafc; color: #1e293b; height: 100vh; display: flex; flex-direction: column; user-select: none; }
 
         /* HEADER */
         #header { height: 60px; background: #ffffff; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: space-between; padding: 0 16px; position: fixed; top: 0; width: 100%; z-index: 50; }
@@ -24,7 +19,7 @@
         /* MAIN */
         #main { flex: 1; padding: 75px 16px 80px 16px; overflow-y: auto; }
         .view { display: none; }
-        .view.active { display: block; animation: fadeIn 0.3s; }
+        .view.active { display: block; }
 
         /* TASK CARD */
         .task-card { background: #fff; padding: 15px; border-radius: 12px; margin-bottom: 12px; border: 1px solid #e2e8f0; position: relative; overflow: hidden; display: flex; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
@@ -32,8 +27,7 @@
         .bar-Work { background: #3b82f6; } .bar-Personal { background: #f97316; } .bar-Health { background: #ef4444; } .bar-Shop { background: #10b981; }
         
         .task-card.priority { border: 1px solid #fca5a5; background: #fff1f2; }
-        body.dark-mode .task-card.priority { background: #450a0a; border-color: #7f1d1d; }
-
+        
         .chk { width: 24px; height: 24px; border: 2px solid #cbd5e1; border-radius: 6px; margin-left: 10px; display: flex; align-items: center; justify-content: center; }
         .task-card.done .chk { background: #0ea5e9; border-color: #0ea5e9; color: white; }
         .chk span { display: none; font-size: 14px; font-weight: bold; }
@@ -49,7 +43,7 @@
 
         /* NOTES */
         .notes-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .note-card { padding: 15px; border-radius: 12px; height: 150px; overflow: hidden; position: relative; border: 1px solid rgba(0,0,0,0.05); color: #1e293b; background: white; }
+        .note-card { padding: 15px; border-radius: 12px; height: 150px; overflow: hidden; position: relative; color: #1e293b; background: white; }
         .note-card h4 { margin: 0 0 5px 0; font-size: 14px; font-weight: 800; }
         .note-card p { margin: 0; font-size: 12px; opacity: 0.8; }
         .bg-yellow { background: #fef08a !important; color:#333; } .bg-green { background: #bbf7d0 !important; color:#333; } 
@@ -64,7 +58,6 @@
         /* TIMER */
         .timer-box { text-align: center; padding-top: 20px; }
         .time-display { font-size: 60px; font-weight: 900; color: #1e293b; margin: 20px 0; }
-        body.dark-mode .time-display { color: white; }
         .t-inp { width: 60px; padding: 10px; text-align: center; border: 1px solid #ccc; border-radius: 8px; background: white; }
         .btn-play { width: 60px; height: 60px; border-radius: 50%; background: #f97316; color: white; border: none; font-size: 20px; margin: 0 10px; }
         .btn-reset { width: 50px; height: 50px; border-radius: 50%; background: #e2e8f0; color: #666; border: none; font-size: 18px; }
@@ -100,7 +93,7 @@
 
     <div id="header">
         <div class="brand">
-            <div class="logo">T</div>
+            <div class="logo-sq">T</div>
             <div style="margin-left:8px;">Task<span>lite</span></div>
         </div>
         <button class="add-btn" onclick="openAddModal()">+</button>
@@ -166,11 +159,11 @@
     </div>
 
     <div id="nav">
-        <button class="nav-item active" id="n1" onclick="nav('tasks', this)"><div class="nav-icon">☑</div>Tasks</button>
-        <button class="nav-item" id="n2" onclick="nav('notes', this)"><div class="nav-icon">📝</div>Notes</button>
-        <button class="nav-item" id="n3" onclick="nav('cal', this)"><div class="nav-icon">📅</div>Cal</button>
-        <button class="nav-item" id="n4" onclick="nav('timer', this)"><div class="nav-icon">⏱</div>Timer</button>
-        <button class="nav-item" id="n5" onclick="nav('settings', this)"><div class="nav-icon">⚙</div>Set</button>
+        <button class="nav-item active" id="n1" onclick="nav('tasks', this)">Tasks</button>
+        <button class="nav-item" id="n2" onclick="nav('notes', this)">Notes</button>
+        <button class="nav-item" id="n3" onclick="nav('cal', this)">Cal</button>
+        <button class="nav-item" id="n4" onclick="nav('timer', this)">Timer</button>
+        <button class="nav-item" id="n5" onclick="nav('settings', this)">Set</button>
     </div>
 
     <!-- TASK MODAL -->
@@ -347,4 +340,12 @@
         }
         function renderTasks() {
             var list = document.getElementById('taskList'); list.innerHTML = '';
-            if(tasks.length === 0) 
+            if(tasks.length === 0) { list.innerHTML = '<div style="text-align:center; padding-top:60px; color:#999">No tasks</div>'; return; }
+            tasks.sort(function(a,b){ return (a.prio==='High'?-1:1) });
+            for(var i=0; i<tasks.length; i++) {
+                var t = tasks[i];
+                var cls = t.done ? 'task-card done' : 'task-card';
+                if(t.prio==='High' && !t.done) cls += ' priority';
+                var check = t.done ? '<span>✔</span>' : '';
+                var st = (t.recur==='Daily' && !t.done) ? '<span class="streak">🔥</span>' : '';
+                list.innerHTML += '<div class="'+cls+'"><div class="bar bar-'+t.cat+'"></div><div class="chk" onclick="toggle('+i+')">'+check+'</div><div class="info" onclick="openDetail('+i+')"><div class="meta">'+t.cat+' • '+t.date+' '+st+'</div><h3>'+t.title+'</h3></div><button cla
