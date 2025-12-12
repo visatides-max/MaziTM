@@ -1,422 +1,372 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <meta charset="utf-8">
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>MaziTM</title>
+    
+    <!-- LIBRARIES (Loaded from fast CDNs) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- CUSTOM CONFIG -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#f97316', // Orange 500
+                        secondary: '#0ea5e9', // Sky 500
+                        dark: '#0f172a',
+                        surface: '#ffffff',
+                        bg: '#f8fafc'
+                    },
+                    fontFamily: { sans: ['Inter', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
     <style>
-        /* CSS STYLES */
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
-        body {
-            margin: 0; padding: 0;
-            font-family: sans-serif;
-            background-color: #f8fafc; color: #1e293b;
-            height: 100vh; display: flex; flex-direction: column;
-            user-select: none;
-        }
-
-        /* HEADER */
-        header {
-            height: 60px; background: white; border-bottom: 1px solid #e2e8f0;
-            display: flex; align-items: center; justify-content: space-between;
-            padding: 0 15px; position: fixed; top: 0; width: 100%; z-index: 100;
-        }
-        .logo {
-            width: 32px; height: 32px;
-            background: linear-gradient(135deg, #fb923c, #ea580c);
-            border-radius: 8px; color: white; font-weight: bold; font-size: 18px;
-            display: flex; align-items: center; justify-content: center;
-        }
-        .brand { font-size: 20px; font-weight: 800; margin-left: 10px; }
-        .brand span { color: #38bdf8; }
-        .add-btn {
-            width: 40px; height: 40px; background: #0f172a; color: white;
-            border-radius: 50%; border: none; font-size: 24px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-        }
-
-        /* MAIN */
-        main { flex: 1; padding: 75px 15px 80px 15px; overflow-y: auto; }
-        .view { display: none; }
-        .view.active { display: block; }
-
-        /* TASKS */
-        .task-card {
-            background: white; padding: 15px; border-radius: 12px;
-            margin-bottom: 10px; display: flex; align-items: center;
-            border: 1px solid #e2e8f0; position: relative; overflow: hidden;
-        }
-        .bar { position: absolute; left: 0; top: 0; bottom: 0; width: 5px; background: #ccc; }
-        .task-card.Work .bar { background: #3b82f6; }
-        .task-card.Personal .bar { background: #f97316; }
-        .task-card.Health .bar { background: #ef4444; }
-        
-        .checkbox {
-            width: 24px; height: 24px; border: 2px solid #cbd5e1; border-radius: 6px;
-            display: flex; align-items: center; justify-content: center; margin-left: 10px;
-        }
-        .task-card.done .checkbox { background: #38bdf8; border-color: #38bdf8; }
-        .checkbox span { display: none; color: white; font-size: 14px; }
-        .task-card.done .checkbox span { display: block; }
-        .task-card.done h3 { text-decoration: line-through; color: #94a3b8; }
-        .task-card.done { opacity: 0.6; }
-
-        .info { flex: 1; margin-left: 12px; }
-        .meta { font-size: 10px; font-weight: 800; color: #94a3b8; text-transform: uppercase; margin-bottom: 2px; }
-        h3 { margin: 0; font-size: 16px; font-weight: 600; }
-        .icons { font-size: 14px; margin-top: 2px; }
-        
-        .del-btn { padding: 10px; color: #cbd5e1; font-weight: bold; font-size: 18px; }
-
-        /* CALENDAR */
-        .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; text-align: center; }
-        .cal-day {
-            aspect-ratio: 1; background: white; border: 1px solid #e2e8f0; border-radius: 8px;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            font-size: 12px; font-weight: bold;
-        }
-        .cal-day.today { background: #fb923c; color: white; border-color: #fb923c; }
-        .dot { width: 4px; height: 4px; background: #38bdf8; border-radius: 50%; margin-top: 2px; display: none; }
-        .cal-day.has-task .dot { display: block; }
-        .cal-day.today .dot { background: white; }
-
-        /* TIMER */
-        .timer-box { text-align: center; padding-top: 40px; }
-        .time-disp { font-size: 60px; font-weight: 900; color: #1e293b; margin: 30px 0; }
-        .play-btn { width: 70px; height: 70px; border-radius: 50%; background: #fb923c; color: white; border: none; font-size: 24px; }
-        .reset-btn { width: 50px; height: 50px; border-radius: 50%; background: #e2e8f0; color: #64748b; border: none; font-size: 20px; margin-left: 15px; }
-
-        /* NAV */
-        nav {
-            position: fixed; bottom: 0; width: 100%; height: 60px; background: white;
-            border-top: 1px solid #e2e8f0; display: flex; justify-content: space-around; align-items: center; z-index: 50;
-        }
-        .nav-item { border: none; background: none; color: #94a3b8; font-size: 10px; font-weight: bold; display: flex; flex-direction: column; align-items: center; }
-        .nav-item.active { color: #fb923c; }
-        .nav-icon { font-size: 20px; margin-bottom: 2px; }
-
-        /* MODAL */
-        #modal {
-            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.5); z-index: 100; display: none; align-items: flex-end;
-        }
-        .sheet { background: white; width: 100%; padding: 20px; border-radius: 20px 20px 0 0; }
-        .lbl { font-size: 10px; font-weight: bold; color: #94a3b8; margin: 15px 0 5px 0; display: block; }
-        input { width: 100%; padding: 12px; font-size: 16px; border: 1px solid #ccc; border-radius: 8px; }
-        
-        .chips { display: flex; gap: 8px; margin-bottom: 10px; overflow-x: auto; }
-        .chip { padding: 8px 12px; border: 1px solid #e2e8f0; border-radius: 15px; font-size: 12px; font-weight: bold; white-space: nowrap; }
-        .chip.selected { background: #fb923c; color: white; border-color: #fb923c; }
-        
-        .opts { display: flex; gap: 10px; margin-top: 15px; margin-bottom: 20px; }
-        .opt { flex: 1; padding: 10px; border: 1px solid #e2e8f0; border-radius: 8px; text-align: center; font-weight: bold; font-size: 12px; }
-        .opt.active { background: #e0f2fe; color: #0284c7; border-color: #38bdf8; }
-        
-        .save-btn { width: 100%; padding: 15px; background: #0f172a; color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: bold; }
-        
-        /* Stats */
-        .stat-box { background: white; padding: 20px; border-radius: 15px; border: 1px solid #e2e8f0; text-align: center; margin-bottom: 20px; }
-        .stat-val { font-size: 30px; font-weight: 900; color: #fb923c; }
+        body { -webkit-tap-highlight-color: transparent; background-color: #f8fafc; user-select: none; }
+        /* Hide Scrollbar but keep functionality */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        /* Animations */
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        .animate-slide-up { animation: slideUp 0.3s ease-out forwards; }
     </style>
 </head>
 <body>
+    <div id="root"></div>
 
-    <header>
-        <div style="display:flex; align-items:center;">
-            <div class="logo">M</div>
-            <div class="brand">Mazi<span>TM</span></div>
-        </div>
-        <button class="add-btn" onclick="openModal()">+</button>
-    </header>
+    <script type="text/babel">
+        const { useState, useEffect, useMemo } = React;
 
-    <main>
-        <!-- Tasks -->
-        <div id="v-tasks" class="view active">
-            <div id="taskList"></div>
-        </div>
+        // --- ICONS COMPONENT ---
+        const Icon = ({ name, size = 20, className = "" }) => {
+            useEffect(() => { lucide.createIcons(); });
+            return <i data-lucide={name} width={size} height={size} className={className}></i>;
+        };
 
-        <!-- Calendar -->
-        <div id="v-cal" class="view">
-            <h2 style="margin-top:0">This Month</h2>
-            <div class="cal-grid" id="calGrid"></div>
-        </div>
-
-        <!-- Timer -->
-        <div id="v-timer" class="view">
-            <div class="timer-box">
-                <div style="font-size:12px; font-weight:bold; color:#94a3b8;">FOCUS TIMER</div>
-                <div class="time-disp" id="timerDisp">25:00</div>
-                <button class="play-btn" onclick="toggleTimer()" id="playBtn">▶</button>
-                <button class="reset-btn" onclick="resetTimer()">↺</button>
-            </div>
-        </div>
-
-        <!-- Settings -->
-        <div id="v-settings" class="view">
-            <div class="stat-box">
-                <div style="display:flex; justify-content:space-around;">
-                    <div><div class="stat-val" id="sTotal">0</div><div style="font-size:10px; font-weight:bold; color:#94a3b8">TOTAL</div></div>
-                    <div><div class="stat-val" id="sDone">0</div><div style="font-size:10px; font-weight:bold; color:#94a3b8">DONE</div></div>
-                </div>
-            </div>
-            <button class="save-btn" style="background:#ef4444" onclick="wipeData()">Reset Data</button>
-        </div>
-    </main>
-
-    <nav>
-        <button class="nav-item active" id="n1" onclick="nav('tasks', this)"><div class="nav-icon">☑</div>Tasks</button>
-        <button class="nav-item" id="n2" onclick="nav('cal', this)"><div class="nav-icon">📅</div>Cal</button>
-        <button class="nav-item" id="n3" onclick="nav('timer', this)"><div class="nav-icon">⏱</div>Timer</button>
-        <button class="nav-item" id="n4" onclick="nav('settings', this)"><div class="nav-icon">⚙</div>Set</button>
-    </nav>
-
-    <!-- Modal -->
-    <div id="modal">
-        <div class="sheet">
-            <h2 style="margin-top:0">New Task</h2>
-            <input type="text" id="tInput" placeholder="Task Name">
-            
-            <span class="lbl">DUE DATE (Day of Month)</span>
-            <div class="chips" id="dateRow"></div>
-            
-            <span class="lbl">CATEGORY</span>
-            <div class="chips" id="catRow"></div>
-            
-            <div class="opts">
-                <div class="opt" id="btnStar" onclick="togOpt('star')">★ Star</div>
-                <div class="opt" id="btnFlag" onclick="togOpt('flag')">⚑ Flag</div>
-            </div>
-
-            <button class="save-btn" onclick="saveTask()">Save Task</button>
-            <div style="text-align:center; padding:15px; color:#94a3b8;" onclick="closeModal()">Cancel</div>
-        </div>
-    </div>
-
-    <script>
-        /* --- GLOBAL VARIABLES --- */
-        var tasks = [];
-        var cats = ['Work', 'Personal', 'Health'];
-        var temp = { cat:'Personal', star:false, flag:false, date:1 };
-        var timerId = null;
-        var timeLeft = 1500;
-        var isRun = false;
-
-        /* --- STARTUP --- */
-        // Try to load, but don't crash if it fails
-        try {
-            var str = localStorage.getItem('mazi_final_v6');
-            if(str) tasks = JSON.parse(str);
-        } catch(e) {
-            console.log("Storage error");
-        }
-
-        // Set default date
-        temp.date = new Date().getDate();
-        
-        // Initial Render
-        renderTasks();
-        renderCal();
-        updateStats();
-
-        /* --- NAVIGATION --- */
-        function nav(name, btn) {
-            var views = document.querySelectorAll('.view');
-            for(var i=0; i<views.length; i++) views[i].style.display = 'none';
-            document.getElementById('view-'+name).style.display = 'block';
-            
-            var navs = document.querySelectorAll('.nav-item');
-            for(var j=0; j<navs.length; j++) navs[j].style.color = '#94a3b8';
-            btn.style.color = '#fb923c';
-        }
-
-        /* --- TASKS --- */
-        function renderTasks() {
-            var list = document.getElementById('taskList');
-            list.innerHTML = '';
-            
-            if(tasks.length === 0) {
-                list.innerHTML = '<div style="text-align:center; margin-top:50px; color:#ccc;">No tasks yet</div>';
-                return;
-            }
-
-            for(var i=0; i<tasks.length; i++) {
-                var t = tasks[i];
-                var cls = t.done ? 'task-card '+t.cat+' done' : 'task-card '+t.cat;
-                var iconHtml = '';
-                if(t.star) iconHtml += '<span style="color:#fbbf24">★</span> ';
-                if(t.flag) iconHtml += '<span style="color:#ef4444">⚑</span>';
-                var checkHtml = t.done ? '<span>✔</span>' : '';
-
-                var html = '<div class="'+cls+'">' +
-                    '<div class="bar"></div>' +
-                    '<div class="checkbox" onclick="togTask('+i+')">'+checkHtml+'</div>' +
-                    '<div class="info">' +
-                        '<div class="meta">'+t.cat+' • Day '+t.date+'</div>' +
-                        '<h3>'+t.title+'</h3>' +
-                        '<div class="icons">'+iconHtml+'</div>' +
-                    '</div>' +
-                    '<div class="del-btn" onclick="delTask('+i+')">✕</div>' +
-                '</div>';
-                list.innerHTML += html;
-            }
-            updateStats();
-        }
-
-        function togTask(i) {
-            tasks[i].done = !tasks[i].done;
-            save();
-            renderTasks();
-            renderCal();
-        }
-
-        function delTask(i) {
-            tasks.splice(i, 1); // Removed confirm() to prevent freezing
-            save();
-            renderTasks();
-            renderCal();
-        }
-
-        function saveTask() {
-            var inp = document.getElementById('tInput');
-            if(!inp.value) return;
-
-            tasks.unshift({
-                title: inp.value,
-                cat: temp.cat,
-                star: temp.star,
-                flag: temp.flag,
-                date: temp.date,
-                done: false
+        // --- APP LOGIC ---
+        function App() {
+            // DATA STATE
+            const [tasks, setTasks] = useState(() => {
+                try { return JSON.parse(localStorage.getItem('mazi_pro_v1') || '[]'); } 
+                catch { return []; }
             });
-
-            save();
-            renderTasks();
-            renderCal();
-            closeModal();
-            inp.value = '';
             
-            // Go to tasks view
-            nav('tasks', document.getElementById('n1'));
-        }
+            // VIEW STATE
+            const [view, setView] = useState('tasks'); // tasks, cal, timer, settings
+            const [modalOpen, setModalOpen] = useState(false);
+            const [filterDate, setFilterDate] = useState(null); // For Calendar filtering
 
-        /* --- CALENDAR --- */
-        function renderCal() {
-            var grid = document.getElementById('calGrid');
-            grid.innerHTML = '';
+            // FORM STATE
+            const [input, setInput] = useState("");
+            const [cat, setCat] = useState("Personal");
+            const [dueDate, setDueDate] = useState(new Date().toISOString().split('T')[0]);
+            const [opts, setOpts] = useState({ star: false, flag: false });
+
+            // TIMER STATE
+            const [timeLeft, setTimeLeft] = useState(1500);
+            const [timerActive, setTimerActive] = useState(false);
+
+            // SAVE DATA
+            useEffect(() => { localStorage.setItem('mazi_pro_v1', JSON.stringify(tasks)); }, [tasks]);
             
-            // Headers
-            var heads = ['S','M','T','W','T','F','S'];
-            for(var h=0; h<7; h++) {
-                grid.innerHTML += '<div style="font-size:10px; font-weight:bold; color:#ccc;">'+heads[h]+'</div>';
-            }
+            // REFRESH ICONS
+            useEffect(() => { lucide.createIcons(); });
 
-            var today = new Date().getDate();
-
-            for(var i=1; i<=30; i++) {
-                var has = false;
-                for(var t=0; t<tasks.length; t++) {
-                    if(tasks[t].date == i && !tasks[t].done) has = true;
+            // TIMER LOOP
+            useEffect(() => {
+                let interval = null;
+                if (timerActive && timeLeft > 0) {
+                    interval = setInterval(() => setTimeLeft(t => t - 1), 1000);
+                } else if (timeLeft === 0) {
+                    setTimerActive(false);
+                    setTimeLeft(1500);
+                    // Simple notification logic could go here
                 }
-                var cls = (i == today) ? 'cal-day today' : 'cal-day';
-                if(has) cls += ' has-task';
-                var dotHtml = '<div class="dot"></div>';
-                grid.innerHTML += '<div class="'+cls+'">' + i + dotHtml + '</div>';
-            }
+                return () => clearInterval(interval);
+            }, [timerActive, timeLeft]);
+
+            // --- HANDLERS ---
+
+            const handleSave = () => {
+                if (!input.trim()) return;
+                const newTask = {
+                    id: Date.now(),
+                    title: input,
+                    cat,
+                    date: dueDate,
+                    star: opts.star,
+                    flag: opts.flag,
+                    completed: false
+                };
+                setTasks([newTask, ...tasks]);
+                setModalOpen(false);
+                setInput("");
+                // Reset defaults
+                setOpts({ star: false, flag: false });
+                setCat("Personal");
+            };
+
+            const toggleTask = (id) => {
+                setTasks(tasks.map(t => t.id === id ? { ...t, completed: !t.completed } : t));
+            };
+
+            const deleteTask = (id) => {
+                if (confirm("Delete this task?")) {
+                    setTasks(tasks.filter(t => t.id !== id));
+                }
+            };
+
+            const formatTime = (s) => {
+                const mins = Math.floor(s / 60);
+                const secs = s % 60;
+                return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+            };
+
+            // --- SUB-COMPONENTS (RENDERERS) ---
+
+            const Categories = [
+                { name: 'Work', bg: 'bg-blue-100', txt: 'text-blue-600' },
+                { name: 'Personal', bg: 'bg-orange-100', txt: 'text-orange-600' },
+                { name: 'Health', bg: 'bg-rose-100', txt: 'text-rose-600' },
+                { name: 'Shop', bg: 'bg-emerald-100', txt: 'text-emerald-600' }
+            ];
+
+            const TaskCard = ({ t }) => {
+                const c = Categories.find(x => x.name === t.cat) || Categories[1];
+                return (
+                    <div className={`bg-white p-4 rounded-2xl mb-3 border border-slate-100 shadow-sm flex items-center gap-3 transition-all ${t.completed ? 'opacity-50' : ''}`}>
+                        <button onClick={() => toggleTask(t.id)} className={`w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-colors ${t.completed ? 'bg-secondary border-secondary text-white' : 'border-slate-300'}`}>
+                            {t.completed && <Icon name="check" size={14} />}
+                        </button>
+                        <div className="flex-1 overflow-hidden">
+                            <div className="flex items-center gap-2 mb-1">
+                                <span className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded-md ${c.bg} ${c.txt}`}>{t.cat}</span>
+                                {t.star && <Icon name="star" size={12} className="text-amber-400 fill-current" />}
+                                {t.flag && <Icon name="flag" size={12} className="text-red-500 fill-current" />}
+                            </div>
+                            <h3 className={`font-semibold text-sm truncate ${t.completed ? 'line-through text-slate-400' : 'text-slate-800'}`}>{t.title}</h3>
+                            <p className="text-[10px] text-slate-400 font-medium mt-0.5">{t.date}</p>
+                        </div>
+                        <button onClick={() => deleteTask(t.id)} className="p-2 text-slate-300 hover:text-red-500">
+                            <Icon name="trash-2" size={18} />
+                        </button>
+                    </div>
+                );
+            };
+
+            const CalendarView = () => {
+                // Generate simple grid for current month
+                const days = Array.from({ length: 30 }, (_, i) => {
+                    const d = new Date();
+                    d.setDate(new Date().getDate() + (i - new Date().getDate() + 1)); // Just a simple 1-30 logic for demo
+                    // Better logic: get true days of month. Let's just do next 14 days for UI clarity
+                    const dateObj = new Date();
+                    dateObj.setDate(dateObj.getDate() + i - 3); // Start a few days back
+                    return dateObj.toISOString().split('T')[0]; 
+                });
+
+                return (
+                    <div className="space-y-4">
+                        <div className="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm">
+                            <h2 className="font-bold text-lg mb-4 text-slate-800">Schedule</h2>
+                            <div className="flex overflow-x-auto gap-3 pb-2 no-scrollbar">
+                                {days.map((dateStr, idx) => {
+                                    const dateObj = new Date(dateStr);
+                                    const dayNum = dateObj.getDate();
+                                    const dayName = dateObj.toLocaleDateString('en-US', { weekday: 'short' });
+                                    const isSelected = filterDate === dateStr;
+                                    const hasTask = tasks.some(t => t.date === dateStr && !t.completed);
+                                    
+                                    return (
+                                        <button key={idx} onClick={() => setFilterDate(isSelected ? null : dateStr)} 
+                                            className={`flex-shrink-0 w-14 h-16 rounded-xl flex flex-col items-center justify-center border-2 transition-all ${isSelected ? 'bg-primary border-primary text-white shadow-lg' : 'bg-white border-slate-100 text-slate-500'}`}>
+                                            <span className="text-[10px] font-bold uppercase">{dayName}</span>
+                                            <span className="text-lg font-black">{dayNum}</span>
+                                            {hasTask && <div className={`w-1.5 h-1.5 rounded-full mt-1 ${isSelected ? 'bg-white' : 'bg-secondary'}`}></div>}
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <h3 className="font-bold text-slate-400 text-xs uppercase mb-3 px-1">
+                                {filterDate ? `Tasks for ${filterDate}` : 'All Upcoming Tasks'}
+                            </h3>
+                            {tasks
+                                .filter(t => filterDate ? t.date === filterDate : true)
+                                .map(t => <TaskCard key={t.id} t={t} />)
+                            }
+                            {tasks.filter(t => filterDate ? t.date === filterDate : true).length === 0 && (
+                                <div className="text-center py-10 text-slate-300 text-sm font-medium">No tasks for this day</div>
+                            )}
+                        </div>
+                    </div>
+                );
+            };
+
+            // --- MAIN RENDER ---
+            return (
+                <div className="flex flex-col h-screen overflow-hidden">
+                    
+                    {/* Header */}
+                    <header className="h-16 bg-white border-b border-slate-100 flex items-center justify-between px-5 fixed top-0 w-full z-20">
+                        <div className="flex items-center gap-2">
+                            <div className="w-9 h-9 bg-gradient-to-br from-primary to-orange-600 rounded-xl flex items-center justify-center text-white font-black text-xl shadow-lg shadow-orange-500/20">M</div>
+                            <h1 className="text-xl font-bold text-slate-800 tracking-tight">Mazi<span className="text-secondary font-light">TM</span></h1>
+                        </div>
+                        <button onClick={() => setModalOpen(true)} className="w-10 h-10 bg-dark rounded-full flex items-center justify-center text-white shadow-xl active:scale-95 transition-transform">
+                            <Icon name="plus" />
+                        </button>
+                    </header>
+
+                    {/* Content */}
+                    <main className="flex-1 pt-20 pb-24 px-4 overflow-y-auto">
+                        
+                        {view === 'tasks' && (
+                            <>
+                                <div className="flex items-center justify-between mb-4 px-1">
+                                    <h2 className="text-xl font-bold text-slate-800">My Tasks</h2>
+                                    <span className="bg-slate-100 text-slate-500 text-xs font-bold px-2 py-1 rounded-lg">{tasks.filter(t=>!t.completed).length} Pending</span>
+                                </div>
+                                {tasks.length === 0 ? (
+                                    <div className="flex flex-col items-center justify-center pt-20 opacity-40">
+                                        <Icon name="clipboard-list" size={48} className="mb-2 text-slate-400"/>
+                                        <p className="font-bold text-slate-400">Your list is empty</p>
+                                    </div>
+                                ) : (
+                                    tasks.sort((a,b) => Number(a.completed)-Number(b.completed)).map(t => <TaskCard key={t.id} t={t} />)
+                                )}
+                            </>
+                        )}
+
+                        {view === 'cal' && <CalendarView />}
+
+                        {view === 'timer' && (
+                            <div className="h-full flex flex-col items-center justify-center -mt-10">
+                                <div className="text-xs font-bold tracking-widest text-slate-400 mb-8">FOCUS TIMER</div>
+                                <div className="relative mb-10">
+                                    <svg className="w-64 h-64 transform -rotate-90">
+                                        <circle cx="128" cy="128" r="120" stroke="currentColor" strokeWidth="8" fill="transparent" className="text-slate-100" />
+                                        <circle cx="128" cy="128" r="120" stroke="currentColor" strokeWidth="8" fill="transparent" strokeDasharray={2 * Math.PI * 120} strokeDashoffset={2 * Math.PI * 120 * (1 - timeLeft/1500)} className="text-primary transition-all duration-1000 ease-linear" strokeLinecap="round" />
+                                    </svg>
+                                    <div className="absolute inset-0 flex items-center justify-center text-6xl font-black text-slate-800 font-mono tracking-tighter">
+                                        {formatTime(timeLeft)}
+                                    </div>
+                                </div>
+                                <div className="flex gap-6">
+                                    <button onClick={() => setTimerActive(!timerActive)} className="w-20 h-20 bg-dark rounded-full text-white flex items-center justify-center shadow-2xl active:scale-95 transition-transform">
+                                        <Icon name={timerActive ? "pause" : "play"} size={32} fill="currentColor" />
+                                    </button>
+                                    <button onClick={() => {setTimerActive(false); setTimeLeft(1500)}} className="w-14 h-14 bg-slate-200 rounded-full text-slate-600 flex items-center justify-center active:scale-95 transition-transform">
+                                        <Icon name="rotate-ccw" />
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+
+                        {view === 'settings' && (
+                            <div className="space-y-6">
+                                <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm">
+                                    <h3 className="font-bold text-lg mb-4 text-slate-800">Overview</h3>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="bg-slate-50 p-4 rounded-2xl text-center">
+                                            <div className="text-3xl font-black text-primary">{tasks.length}</div>
+                                            <div className="text-[10px] font-bold uppercase text-slate-400">Total Tasks</div>
+                                        </div>
+                                        <div className="bg-slate-50 p-4 rounded-2xl text-center">
+                                            <div className="text-3xl font-black text-emerald-500">{tasks.filter(t=>t.completed).length}</div>
+                                            <div className="text-[10px] font-bold uppercase text-slate-400">Completed</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button onClick={() => {if(confirm("Reset all data?")) setTasks([])}} className="w-full py-4 bg-red-50 text-red-500 font-bold rounded-2xl border border-red-100">
+                                    Delete All Data
+                                </button>
+                                <div className="text-center text-xs font-bold text-slate-300 mt-4">MaziTM Pro v1.0</div>
+                            </div>
+                        )}
+
+                    </main>
+
+                    {/* Bottom Nav */}
+                    <nav className="h-16 bg-white border-t border-slate-100 fixed bottom-0 w-full flex justify-around items-center z-40 pb-safe">
+                        {[
+                            { id: 'tasks', icon: 'check-square', label: 'Tasks' },
+                            { id: 'cal', icon: 'calendar', label: 'Calendar' },
+                            { id: 'timer', icon: 'timer', label: 'Timer' },
+                            { id: 'settings', icon: 'settings', label: 'Settings' },
+                        ].map(item => (
+                            <button key={item.id} onClick={() => setView(item.id)} className={`flex flex-col items-center gap-1 transition-colors ${view === item.id ? 'text-primary' : 'text-slate-400'}`}>
+                                <Icon name={item.icon} size={22} strokeWidth={view === item.id ? 2.5 : 2} />
+                                <span className="text-[10px] font-bold">{item.label}</span>
+                            </button>
+                        ))}
+                    </nav>
+
+                    {/* Add Task Modal */}
+                    {modalOpen && (
+                        <div className="fixed inset-0 bg-slate-900/60 z-50 flex items-end justify-center backdrop-blur-sm p-4 animate-fade-in">
+                            <div className="bg-white w-full max-w-md rounded-3xl p-6 animate-slide-up shadow-2xl">
+                                <div className="flex justify-between items-center mb-6">
+                                    <h2 className="text-xl font-bold text-slate-800">New Task</h2>
+                                    <button onClick={() => setModalOpen(false)} className="bg-slate-100 p-2 rounded-full text-slate-500"><Icon name="x" size={20} /></button>
+                                </div>
+
+                                <div className="space-y-5">
+                                    {/* Title Input */}
+                                    <input autoFocus value={input} onChange={e => setInput(e.target.value)} placeholder="What do you want to do?" className="w-full text-lg border-b-2 border-slate-100 py-3 outline-none focus:border-primary bg-transparent font-medium" />
+
+                                    {/* Date Picker (Native) */}
+                                    <div>
+                                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2 block">Due Date</label>
+                                        <input type="date" value={dueDate} onChange={e => setDueDate(e.target.value)} className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 font-bold text-slate-700 outline-none focus:ring-2 focus:ring-primary/20" />
+                                    </div>
+
+                                    {/* Categories */}
+                                    <div>
+                                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2 block">Category</label>
+                                        <div className="flex gap-2 overflow-x-auto pb-2 no-scrollbar">
+                                            {Categories.map(c => (
+                                                <button key={c.name} onClick={() => setCat(c.name)} className={`px-4 py-2 rounded-xl text-xs font-bold border transition-all whitespace-nowrap ${cat === c.name ? 'bg-dark text-white border-dark' : 'bg-white text-slate-500 border-slate-200'}`}>
+                                                    {c.name}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    {/* Toggles */}
+                                    <div className="flex gap-3">
+                                        <button onClick={() => setOpts({ ...opts, star: !opts.star })} className={`flex-1 py-3 rounded-xl border flex items-center justify-center gap-2 font-bold transition-colors ${opts.star ? 'bg-amber-50 border-amber-200 text-amber-600' : 'border-slate-200 text-slate-400'}`}>
+                                            <Icon name="star" size={18} className={opts.star ? "fill-current" : ""} /> Star
+                                        </button>
+                                        <button onClick={() => setOpts({ ...opts, flag: !opts.flag })} className={`flex-1 py-3 rounded-xl border flex items-center justify-center gap-2 font-bold transition-colors ${opts.flag ? 'bg-red-50 border-red-200 text-red-600' : 'border-slate-200 text-slate-400'}`}>
+                                            <Icon name="flag" size={18} className={opts.flag ? "fill-current" : ""} /> Flag
+                                        </button>
+                                    </div>
+
+                                    <button onClick={handleSave} className="w-full bg-primary hover:bg-orange-600 text-white py-4 rounded-xl font-bold text-lg shadow-lg shadow-orange-500/30 active:scale-95 transition-transform">
+                                        Create Task
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                </div>
+            );
         }
 
-        /* --- TIMER --- */
-        function toggleTimer() {
-            var btn = document.getElementById('playBtn');
-            if(isRun) {
-                clearInterval(timerId);
-                isRun = false;
-                btn.innerText = '▶';
-            } else {
-                isRun = true;
-                btn.innerText = 'II';
-                timerId = setInterval(function() {
-                    timeLeft--;
-                    if(timeLeft <= 0) {
-                        clearInterval(timerId);
-                        isRun = false;
-                        timeLeft = 1500;
-                        btn.innerText = '▶';
-                    }
-                    var m = Math.floor(timeLeft / 60);
-                    var s = timeLeft % 60;
-                    if(s<10) s = '0'+s;
-                    document.getElementById('timerDisp').innerText = m + ':' + s;
-                }, 1000);
-            }
-        }
-
-        function resetTimer() {
-            clearInterval(timerId);
-            isRun = false;
-            timeLeft = 1500;
-            document.getElementById('playBtn').innerText = '▶';
-            document.getElementById('timerDisp').innerText = '25:00';
-        }
-
-        /* --- MODAL --- */
-        function openModal() {
-            document.getElementById('modal').style.display = 'flex';
-            temp = { cat:'Personal', star:false, flag:false, date: new Date().getDate() };
-            
-            // Render Cats
-            var cRow = document.getElementById('catRow');
-            cRow.innerHTML = '';
-            for(var i=0; i<cats.length; i++) {
-                var c = cats[i];
-                var cls = (temp.cat == c) ? 'chip selected' : 'chip';
-                cRow.innerHTML += '<div class="'+cls+'" onclick="setCat(\''+c+'\')">'+c+'</div>';
-            }
-
-            // Render Dates (Horizontal Scroll)
-            var dRow = document.getElementById('dateRow');
-            dRow.innerHTML = '';
-            for(var j=1; j<=30; j++) {
-                var cls = (temp.date == j) ? 'chip selected' : 'chip';
-                dRow.innerHTML += '<div class="'+cls+'" onclick="setDate('+j+')">'+j+'</div>';
-            }
-            
-            updateOpts();
-        }
-
-        function closeModal() { document.getElementById('modal').style.display = 'none'; }
-        
-        function setCat(c) { temp.cat = c; openModal(); } // Re-render simple way
-        function setDate(d) { temp.date = d; openModal(); }
-        function togOpt(k) { temp[k] = !temp[k]; updateOpts(); }
-        
-        function updateOpts() {
-            var s = document.getElementById('btnStar');
-            var f = document.getElementById('btnFlag');
-            s.className = temp.star ? 'opt active' : 'opt';
-            f.className = temp.flag ? 'opt active' : 'opt';
-        }
-
-        /* --- STATS --- */
-        function updateStats() {
-            document.getElementById('sTotal').innerText = tasks.length;
-            var d = 0;
-            for(var i=0; i<tasks.length; i++) if(tasks[i].done) d++;
-            document.getElementById('sDone').innerText = d;
-        }
-
-        function wipeData() {
-            tasks = [];
-            save();
-            renderTasks();
-            renderCal();
-            updateStats();
-        }
-
-        function save() {
-            try {
-                localStorage.setItem('mazi_final_v6', JSON.stringify(tasks));
-            } catch(e) {}
-        }
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
     </script>
 </body>
 </html>
